@@ -72,6 +72,16 @@ public class Formula {
         this.monoisotopicMassWithAdduct = calculateMonoisotopicMassWithAdduct();
     }
 
+    public Formula() {
+        this.elements = new HashMap<>();
+        this.adduct = null;
+        this.charge = 0;
+        this.chargeType = "";
+        this.monoisotopicMass = 0.0;
+        this.monoisotopicMassWithAdduct = 0.0;
+        this.metadata = new HashMap<>();
+    }
+
     public boolean equals(Object other) {
         if (other instanceof Formula) {
             Formula otherFormula = (Formula) other;
@@ -197,5 +207,8 @@ public class Formula {
         } catch (IncorrectFormula | NotFoundElement e) {
             e.printStackTrace();
         }
+    }
+
+    public double getMonoisotopicMass() { return this.monoisotopicMass;
     }
 }
