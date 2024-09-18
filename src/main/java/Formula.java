@@ -1,6 +1,8 @@
+import exceptions.IncorrectAdduct;
 import exceptions.IncorrectFormula;
 import exceptions.NotFoundElement;
 
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -19,7 +21,7 @@ public class Formula {
     private double monoisotopicMassWithAdduct;
     private Map<String, Object> metadata;
 
-    public Formula(Map<Element.ElementType, Integer> elements, String adduct, int charge, String chargeType, Map<String, Object> metadata) throws IncorrectFormula, NotFoundElement {
+    public Formula(Map<Element.ElementType, Integer> elements, String adduct, int charge, String chargeType, Map<String, Object> metadata) throws IncorrectFormula, NotFoundElement, IncorrectAdduct {
         this.metadata = metadata != null ? metadata : new HashMap<>();
 
         this.elements = new HashMap<>();
@@ -46,7 +48,7 @@ public class Formula {
         this.monoisotopicMass = calculateMonoisotopicMass();
         this.monoisotopicMassWithAdduct = calculateMonoisotopicMassWithAdduct();
     }
-    public Formula(Map<Element.ElementType, Integer> elements, String adduct, int charge, String chargeType) throws IncorrectFormula {
+    public Formula(Map<Element.ElementType, Integer> elements, String adduct, int charge, String chargeType) throws IncorrectFormula, IncorrectAdduct, NotFoundElement {
         this.elements = new HashMap<>();
         for (Map.Entry<Element.ElementType, Integer> entry : elements.entrySet()) {
             if (entry.getValue() <= 0) {
@@ -103,7 +105,7 @@ public class Formula {
         return formulaString.append(adductStr).toString();
     }
 
-    public String getFinalFormulaWithAdduct() throws IncorrectFormula {
+    public String getFinalFormulaWithAdduct() throws IncorrectFormula, IncorrectAdduct, NotFoundElement {
         if (this.adduct == null) {
             return toString();
         }
@@ -116,7 +118,7 @@ public class Formula {
         return this.elements.hashCode();
     }
 
-    public Formula add(Formula other) throws IncorrectFormula {
+    public Formula add(Formula other) throws IncorrectFormula, IncorrectAdduct, NotFoundElement {
         Map<Element.ElementType, Integer> newElements = new HashMap<>(this.elements);
         for (Map.Entry<Element.ElementType, Integer> entry : other.elements.entrySet()) {
             newElements.put(entry.getKey(), newElements.getOrDefault(entry.getKey(), 0) + entry.getValue());
@@ -127,7 +129,7 @@ public class Formula {
         return new Formula(newElements, null, Math.abs(newCharge), newChargeType);
     }
 
-    public Formula subtract(Formula other) throws IncorrectFormula {
+    public Formula subtract(Formula other) throws IncorrectFormula, IncorrectAdduct, NotFoundElement {
         Map<Element.ElementType, Integer> newElements = new HashMap<>(this.elements);
         for (Map.Entry<Element.ElementType, Integer> entry : other.elements.entrySet()) {
             newElements.put(entry.getKey(), newElements.getOrDefault(entry.getKey(), 0) - entry.getValue());
@@ -143,7 +145,7 @@ public class Formula {
         return new Formula(newElements, null, Math.abs(newCharge), newChargeType);
     }
 
-    public Formula multiply(int numToMultiply) throws IncorrectFormula {
+    public Formula multiply(int numToMultiply) throws IncorrectFormula, IncorrectAdduct, NotFoundElement {
         Map<Element.ElementType, Integer> newElements = new HashMap<>(this.elements);
         for (Map.Entry<Element.ElementType, Integer> entry : newElements.entrySet()) {
             newElements.put(entry.getKey(), entry.getValue() * numToMultiply);
@@ -151,7 +153,7 @@ public class Formula {
         return new Formula(newElements, this.adduct, this.charge, this.chargeType);
     }
 
-    public static Formula formulaFromStringHill(String formulaStr, String adduct, Map<String, Object> metadata) throws IncorrectFormula, NotFoundElement {
+    public static Formula formulaFromStringHill(String formulaStr, String adduct, Map<String, Object> metadata) throws IncorrectFormula, NotFoundElement, IncorrectAdduct {
         if (!formulaStr.matches("^[\\[?a-zA-Z0-9\\]?]+(\\(?[+-]?\\d*\\)?)?$")) {
             throw new IncorrectFormula(formulaStr);
         }
@@ -191,20 +193,140 @@ public class Formula {
         return new Formula(elements, adduct, charge, chargeType, metadata);
     }
 
-    private double calculateMonoisotopicMass() {
-        // TODO
-        return 0.0;
+    private double calculateMonoisotopicMass() throws IncorrectFormula {
+        double monoisotopicMass = 0.0;
+
+        // Iterate over elements and their counts (appearances)
+        for (Map.Entry<Element.ElementType, Integer> entry : elements.entrySet()) {
+            Element.ElementType element = entry.getKey();
+            int appearances = entry.getValue();
+            monoisotopicMass += Element.elementWeights.get(element) * appearances;
+        }
+
+        // Adjust for charge type
+        double electronsWeight = 0.0;
+        switch (chargeType) {
+            case "+":
+                electronsWeight = -ELECTRON_WEIGHT * charge;
+                break;
+            case "-":
+                electronsWeight = ELECTRON_WEIGHT * charge;
+                break;
+            case "":
+                electronsWeight = 0.0;
+                break;
+            default:
+                throw new IncorrectFormula("The formula contains a wrong charge type");
+        }
+
+        monoisotopicMass += electronsWeight;
+
+        // If charge is zero, divide by 1, otherwise divide by charge
+        int adductChargeToDivide = (charge != 0) ? charge : 1;
+        monoisotopicMass /= adductChargeToDivide;
+
+        return monoisotopicMass;
     }
 
-    private double calculateMonoisotopicMassWithAdduct() {
-        // TODO
-        return 0.0;
+    private double calculateMonoisotopicMassWithAdduct() throws IncorrectFormula, IncorrectAdduct, NotFoundElement {
+        double monoisotopicMassWithAdduct = this.getMonoisotopicMass();
+        if (this.adduct == null) {
+            return monoisotopicMassWithAdduct;
+        }
+
+
+        //TODO is this right?
+        Adduct adductNew = new Adduct(this.adduct);
+
+        // Calculate partial elements considering the adduct multiplier
+        Map<Element.ElementType, Integer> partialElements = new EnumMap<>(Element.ElementType.class);
+        for (Map.Entry<Element.ElementType, Integer> entry : this.elements.entrySet()) {
+            Element.ElementType element = entry.getKey();
+            int count = entry.getValue();
+            partialElements.put(element, count * adductNew.getMultimer());
+        }
+
+        // Calculate partial charge
+        int partialCharge = this.chargeType.equals("+") ? this.charge : -this.charge;
+        String adductChargeType = adductNew.getAdductChargeType();
+        int adductCharge = adductNew.getAdductCharge();
+        int finalCharge;
+
+        switch (adductChargeType) {
+            case "+":
+                finalCharge = partialCharge + adductCharge;
+                break;
+            case "-":
+                finalCharge = partialCharge - adductCharge;
+                break;
+            case "":
+                finalCharge = partialCharge;
+                break;
+            default:
+                throw new IncorrectFormula("The formula contains a wrong adduct");
+        }
+
+        // Update partial elements with adduct formula
+        Formula formulaPlus = adductNew.getFormulaPlus();
+        Formula formulaMinus = adductNew.getFormulaMinus();
+
+        for (Map.Entry<Element.ElementType, Integer> entry : formulaPlus.getElements().entrySet()) {
+            Element.ElementType element = entry.getKey();
+            int appearances = entry.getValue();
+            partialElements.merge(element, appearances, Integer::sum);
+        }
+
+        for (Map.Entry<Element.ElementType, Integer> entry : formulaMinus.getElements().entrySet()) {
+            Element.ElementType element = entry.getKey();
+            int appearances = entry.getValue();
+            partialElements.merge(element, -appearances, Integer::sum);
+            if (partialElements.get(element) < 0) {
+                throw new IncorrectFormula("The formula contains a wrong adduct because the element " + element + " is negative " + partialElements.get(element));
+            }
+        }
+
+        // Calculate monoisotopic mass with adduct
+        monoisotopicMassWithAdduct = 0;
+        for (Map.Entry<Element.ElementType, Integer> entry : partialElements.entrySet()) {
+            Element.ElementType element = entry.getKey();
+            int appearances = entry.getValue();
+            monoisotopicMassWithAdduct += Element.elementWeights.get(element) * appearances;
+        }
+
+        // Adjust for charge
+        double electronsWeight = (finalCharge != 0) ? -ELECTRON_WEIGHT * finalCharge : 0;
+        monoisotopicMassWithAdduct += electronsWeight;
+        int adductChargeToDivide = (finalCharge != 0) ? finalCharge : 1;
+        monoisotopicMassWithAdduct /= Math.abs(adductChargeToDivide);
+
+        return monoisotopicMassWithAdduct;
     }
 
     public Map<Element.ElementType, Integer> getElements() {
-        return new HashMap<>(this.elements);
+        return elements;
     }
 
-    public double getMonoisotopicMass() { return this.monoisotopicMass;
+    public String getAdduct() {
+        return adduct;
+    }
+
+    public int getCharge() {
+        return charge;
+    }
+
+    public String getChargeType() {
+        return chargeType;
+    }
+
+    public double getMonoisotopicMass() {
+        return monoisotopicMass;
+    }
+
+    public double getMonoisotopicMassWithAdduct() {
+        return monoisotopicMassWithAdduct;
+    }
+
+    public Map<String, Object> getMetadata() {
+        return metadata;
     }
 }
