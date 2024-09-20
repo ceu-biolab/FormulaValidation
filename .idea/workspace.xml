@@ -4,8 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="daffc9fe-f8eb-46a7-bb38-56c65b017579" name="Changes" comment="element class">
+    <list default="true" id="daffc9fe-f8eb-46a7-bb38-56c65b017579" name="Changes" comment="maybe!? finished classes">
+      <change afterPath="$PROJECT_DIR$/src/test/java/AdductTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/ElementTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/FormulaTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/Adduct.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Adduct.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/Formula.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/Formula.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -57,6 +62,67 @@
       <recent name="" />
     </key>
   </component>
+  <component name="RunManager" selected="JUnit.FormulaTest.testAddFormulas">
+    <configuration name="ElementTest.testElementWeightCarbon" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="FormulaValidation" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="ElementTest" />
+      <option name="METHOD_NAME" value="testElementWeightCarbon" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ElementTest.testElementWeightHydrogen" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="FormulaValidation" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="ElementTest" />
+      <option name="METHOD_NAME" value="testElementWeightHydrogen" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ElementTest.testElementWeightOxygen" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="FormulaValidation" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="ElementTest" />
+      <option name="METHOD_NAME" value="testElementWeightOxygen" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="FormulaTest.testAddFormulas" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="FormulaValidation" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="FormulaTest" />
+      <option name="METHOD_NAME" value="testAddFormulas" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="FormulaTest.testParse" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="FormulaValidation" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="FormulaTest" />
+      <option name="METHOD_NAME" value="testParse" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.FormulaTest.testAddFormulas" />
+        <item itemvalue="JUnit.FormulaTest.testParse" />
+        <item itemvalue="JUnit.ElementTest.testElementWeightOxygen" />
+        <item itemvalue="JUnit.ElementTest.testElementWeightCarbon" />
+        <item itemvalue="JUnit.ElementTest.testElementWeightHydrogen" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -70,7 +136,7 @@
       <workItem from="1726134021850" duration="2368000" />
       <workItem from="1726144353332" duration="3617000" />
       <workItem from="1726475318911" duration="2523000" />
-      <workItem from="1726581888984" duration="3076000" />
+      <workItem from="1726581888984" duration="22127000" />
     </task>
     <task id="LOCAL-00001" summary="formula class">
       <created>1721214111133</created>
@@ -107,7 +173,14 @@
       <option name="project" value="LOCAL" />
       <updated>1726162382886</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="maybe!? finished classes">
+      <created>1726657979193</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1726657979193</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -117,6 +190,7 @@
     <MESSAGE value="formula class" />
     <MESSAGE value="adduct class and new exception" />
     <MESSAGE value="element class" />
-    <option name="LAST_COMMIT_MESSAGE" value="element class" />
+    <MESSAGE value="maybe!? finished classes" />
+    <option name="LAST_COMMIT_MESSAGE" value="maybe!? finished classes" />
   </component>
 </project>

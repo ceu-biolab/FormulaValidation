@@ -2,11 +2,20 @@ import exceptions.IncorrectAdduct;
 import exceptions.IncorrectFormula;
 import exceptions.NotFoundElement;
 
+import java.util.Objects;
+
+import java.io.IOException;
 import java.util.EnumMap;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.methods.GetMethod;
 
 public class Formula {
     private static final double ELECTRON_WEIGHT = 0.00054858;
@@ -87,31 +96,108 @@ public class Formula {
     public boolean equals(Object other) {
         if (other instanceof Formula) {
             Formula otherFormula = (Formula) other;
-            return this.elements.equals(otherFormula.getElements()) && this.adduct.equals(otherFormula.adduct);
+            return this.elements.equals(otherFormula.getElements()) &&
+                    (this.adduct == null ? otherFormula.adduct == null : this.adduct.equals(otherFormula.adduct));
         }
         return false;
     }
 
+    @Override
     public String toString() {
         StringBuilder formulaString = new StringBuilder();
+
+        // Append elements
         for (Map.Entry<Element.ElementType, Integer> entry : this.elements.entrySet()) {
             formulaString.append(entry.getKey()).append(entry.getValue() > 1 ? entry.getValue() : "");
         }
+
+        // Handle charge
+        String chargeStr = "";
         if (!this.chargeType.equals("")) {
-            String chargeStr = this.charge == 1 ? "" : String.valueOf(this.charge);
-            formulaString.append(this.chargeType).append(chargeStr);
+            chargeStr = this.charge == 1 ? this.chargeType : this.chargeType + this.charge;
         }
-        String adductStr = this.adduct == null ? "" : "+" + this.adduct;
-        return formulaString.append(adductStr).toString();
+
+        // Handle adduct
+        String adductStr = this.adduct == null ? "" : this.adduct;
+
+        // Return the result as formula charge adduct without quotation marks
+        return String.format("%s %s %s", formulaString.toString(), chargeStr, adductStr);
     }
 
+
     public String getFinalFormulaWithAdduct() throws IncorrectFormula, IncorrectAdduct, NotFoundElement {
+        /*
+         * Returns a string representation of the final formula plus or minus the adduct.
+         * e.g., "[C12H3N3O]+"
+         */
         if (this.adduct == null) {
-            return toString();
+            return this.toString();  // Return the string representation of the formula
         }
-        Formula finalFormula = this.multiply(Integer.parseInt(this.adduct.replaceAll("\\D", "")));
-        // Assuming the adduct processing logic to be added here
-        return finalFormula.toString();
+
+        Adduct adductNew = new Adduct(this.adduct);
+
+        // Multiply the formula by the adduct multimer
+        Formula finalFormula = this.multiply(adductNew.getMultimer());
+
+        // If the adduct charge is 0, just add or subtract the formulas
+        if (adductNew.getAdductCharge() == 0) {
+            Formula formulaPlus = adductNew.getFormulaPlus();
+            Formula formulaMinus = adductNew.getFormulaMinus();
+
+            finalFormula = finalFormula.add(formulaPlus).subtract(formulaMinus);
+            return finalFormula.toString();
+        } else {
+            // Handle charge adjustments for the final formula
+            int ownCharge;
+            if (this.chargeType.equals("+")) {
+                ownCharge = this.charge;
+            } else if (this.chargeType.equals("-")) {
+                ownCharge = -this.charge;
+            } else {
+                ownCharge = 0;
+            }
+
+            int adductCharge;
+            if (adductNew.getAdductChargeType().equals("+")) {
+                adductCharge = adductNew.getAdductCharge();
+            } else if (adductNew.getAdductChargeType().equals("-")) {
+                adductCharge = -adductNew.getAdductCharge();
+            } else {
+                adductCharge = 0;
+            }
+
+            int finalCharge = ownCharge + adductCharge;
+            String finalChargeStr;
+            if (finalCharge == 0) {
+                finalChargeStr = "";
+            } else if (finalCharge == 1) {
+                finalChargeStr = "+";
+            } else if (finalCharge > 1) {
+                finalChargeStr = "+" + finalCharge;
+            } else if (finalCharge == -1) {
+                finalChargeStr = "-";
+            } else {
+                finalChargeStr = "-" + Math.abs(finalCharge);
+            }
+
+            // Apply formulaPlus and formulaMinus to the final formula
+            Formula formulaPlus = adductNew.getFormulaPlus();
+            Formula formulaMinus = adductNew.getFormulaMinus();
+
+            finalFormula = finalFormula.add(formulaPlus).subtract(formulaMinus);
+
+            // Convert finalFormula elements to string
+            StringBuilder formulaString = new StringBuilder();
+            for (Map.Entry<Element.ElementType, Integer> entry : finalFormula.getElements().entrySet()) {
+                formulaString.append(entry.getKey().name());
+                if (entry.getValue() > 1) {
+                    formulaString.append(entry.getValue());
+                }
+            }
+
+            // Enclose the formula in brackets and add the final charge type
+            return "[" + formulaString.toString() + "]" + finalChargeStr;
+        }
     }
 
     public int hashCode() {
@@ -126,6 +212,7 @@ public class Formula {
         int newCharge = this.chargeType.equals("-") ? -this.charge : this.charge;
         newCharge = other.chargeType.equals("-") ? newCharge - other.charge : newCharge + other.charge;
         String newChargeType = newCharge == 0 ? "" : (newCharge > 0 ? "+" : "-");
+        //TODO keep og adduct
         return new Formula(newElements, null, Math.abs(newCharge), newChargeType);
     }
 
@@ -178,17 +265,25 @@ public class Formula {
             elements.put(elementType, elements.getOrDefault(elementType, 0) + appearances);
         }
 
-
-        Pattern chargePattern = Pattern.compile("\\(?([-+]?\\d*)\\)?$");
+        // Adjusted pattern to handle charges
+        Pattern chargePattern = Pattern.compile("\\(?([-+])(\\d*)\\)?$");
         Matcher chargeMatcher = chargePattern.matcher(formulaStr);
         int charge = 0;
         String chargeType = "";
 
         if (chargeMatcher.find()) {
-            chargeType = chargeMatcher.group(1).substring(0, 1);
-            String chargeValue = chargeMatcher.group(1).substring(1);
+            // Capture the charge type ('+' or '-')
+            chargeType = chargeMatcher.group(1);
+            // Capture the numeric part of the charge, if present
+            String chargeValue = chargeMatcher.group(2);
+            // If the numeric part is empty, set the charge to 1; otherwise, convert to an integer
             charge = chargeValue.isEmpty() ? 1 : Integer.parseInt(chargeValue);
+        } else {
+            // If no charge is found, set charge to 0 and chargeType to empty string
+            charge = 0;
+            chargeType = "";
         }
+
 
         return new Formula(elements, adduct, charge, chargeType, metadata);
     }
@@ -233,7 +328,6 @@ public class Formula {
         if (this.adduct == null) {
             return monoisotopicMassWithAdduct;
         }
-
 
         //TODO is this right?
         Adduct adductNew = new Adduct(this.adduct);
@@ -300,6 +394,67 @@ public class Formula {
         monoisotopicMassWithAdduct /= Math.abs(adductChargeToDivide);
 
         return monoisotopicMassWithAdduct;
+    }
+
+    public static Formula formulaFromString(String formulaStr, String adduct, boolean noApi, Map<String, Object> metadata) throws IncorrectFormula, NotFoundElement, IncorrectAdduct {
+        try {
+            // Attempt to process the formula directly using formulaFromStringHill
+            return formulaFromStringHill(formulaStr, adduct, metadata);
+        } catch (Exception e) {
+            // Print the error and continue
+            System.out.println(e.getMessage());
+        }
+
+        if (!noApi) {
+            // If noApi is false, attempt to resolve the formula via ChemCalc API
+            try {
+                String url = CC_URL + "?mf=" + formulaStr + "&isotopomers=jcamp,xy";
+                HttpClient client = new HttpClient();
+                GetMethod method = new GetMethod(url);
+
+                int statusCode = client.executeMethod(method);
+                if (statusCode != 200) {
+                    throw new IncorrectFormula("The formula " + formulaStr + " was not parseable to a correct formula");
+                }
+
+                // Parse JSON response
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonNode data = objectMapper.readTree(method.getResponseBodyAsString());
+
+                // Extract the molecular formula in Hill notation
+                String mfHill = data.get("mf").asText();
+
+                // Use the Hill notation formula to create the Formula object
+                return formulaFromStringHill(mfHill, adduct, metadata);
+            } catch (IOException e) {
+                throw new IncorrectFormula("Error connecting to ChemCalc API: " + e.getMessage());
+            }
+        } else {
+            // If noApi is true, return null as no API call is made
+            return null;
+        }
+    }
+
+    public boolean checkMonoisotopicMass(double externalMass, double massToleranceInPpm) {
+        double absValueDelta = ppmToAbsolute(getMonoisotopicMass(), massToleranceInPpm);
+        return Math.abs(getMonoisotopicMass() - externalMass) <= absValueDelta;
+    }
+
+    public boolean checkMonoisotopicMassWithAdduct(double externalMass, double massToleranceInPpm) {
+        double absValueDelta = ppmToAbsolute(getMonoisotopicMassWithAdduct(), massToleranceInPpm);
+        return Math.abs(getMonoisotopicMassWithAdduct() - externalMass) <= absValueDelta;
+    }
+
+    public double ppmDifferenceWithExpMass(double referenceMonoisotopicMass) {
+        return absoluteToPpm(getMonoisotopicMassWithAdduct(), referenceMonoisotopicMass);
+    }
+
+    public static double absoluteToPpm(double referenceMonoisotopicMass, double massToCompare) {
+        return Math.abs((referenceMonoisotopicMass - massToCompare) / referenceMonoisotopicMass) * 1_000_000.0;
+    }
+
+    public static double ppmToAbsolute(double referenceMonoisotopicMass, double ppm) {
+        return (referenceMonoisotopicMass / 1_000_000.0) * ppm;
     }
 
     public Map<Element.ElementType, Integer> getElements() {

@@ -4,6 +4,8 @@ import exceptions.NotFoundElement;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.Map;
+import java.util.HashMap;
 
 public class Adduct {
     private static final double ELECTRON_WEIGHT = 0.00054858;
@@ -45,6 +47,72 @@ public class Adduct {
             throw new IncorrectAdduct(adduct);
         }
     }
+    private void calculateAdductFormulaToAddAndSubtract(String adductFormula) throws IncorrectAdduct, NotFoundElement, IncorrectFormula {
+        /*
+         * Args:
+         * adductFormula (String): String representing the formula within an adduct in the form +HCOOH-H, +Ca, +H, +CH3COOH-H, etc.
+         * Returns:
+         * - The formula with the elements of the adduct to add (formulaPlus)
+         * - The formula with the elements of the adduct to subtract (formulaMinus)
+         * - The adduct mass.
+         * Raises:
+         * - IncorrectAdduct: if the adduct does not follow the format specified.
+         */
+
+        this.adductMass = 0.0;
+        // Regex to match symbols (+/-), optional numbers, and formulas
+        String pattern = "([\\+-])(\\d*)([A-Za-z0-9]+)";
+        Pattern regex = Pattern.compile(pattern);
+        Matcher matcher = regex.matcher(adductFormula);
+
+        // Local dictionary to store the final number of elements to add or subtract
+        Map<Element.ElementType, Integer> finalAdductElements = new HashMap<>();
+
+        while (matcher.find()) {
+            String symbol = matcher.group(1);
+            String numberStr = matcher.group(2);
+            String subformulaStr = matcher.group(3);
+
+            int numberSubformulas = (numberStr == null || numberStr.isEmpty()) ? 1 : Integer.parseInt(numberStr);
+
+            // Convert the subformula string to a Formula object
+            Formula subformula = Formula.formulaFromStringHill(subformulaStr, null, null);
+            Map<Element.ElementType, Integer> subformulaElements = subformula.getElements();
+
+            // Update finalAdductElements depending on the symbol (+ or -)
+            if (symbol.equals("+")) {
+                for (Map.Entry<Element.ElementType, Integer> entry : subformulaElements.entrySet()) {
+                    finalAdductElements.put(entry.getKey(), finalAdductElements.getOrDefault(entry.getKey(), 0) + entry.getValue() * numberSubformulas);
+                }
+            } else if (symbol.equals("-")) {
+                for (Map.Entry<Element.ElementType, Integer> entry : subformulaElements.entrySet()) {
+                    finalAdductElements.put(entry.getKey(), finalAdductElements.getOrDefault(entry.getKey(), 0) - entry.getValue() * numberSubformulas);
+                }
+            } else {
+                throw new IncorrectAdduct(adductFormula);
+            }
+        }
+
+        // Separate the elements to add and subtract
+        Map<Element.ElementType, Integer> elementsToAdd = new HashMap<>();
+        Map<Element.ElementType, Integer> elementsToSubtract = new HashMap<>();
+
+        for (Map.Entry<Element.ElementType, Integer> entry : finalAdductElements.entrySet()) {
+            if (entry.getValue() > 0) {
+                elementsToAdd.put(entry.getKey(), entry.getValue());
+            } else if (entry.getValue() < 0) {
+                elementsToSubtract.put(entry.getKey(), -entry.getValue());
+            }
+        }
+
+        // Create Formula objects for the elements to add and subtract
+        this.formulaPlus = new Formula(elementsToAdd, null, 0, null);
+        this.formulaMinus = new Formula(elementsToSubtract, null, 0, null);
+
+        // Calculate the adduct mass
+        this.adductMass = this.formulaPlus.getMonoisotopicMass() - this.formulaMinus.getMonoisotopicMass();
+    }
+
 
     // Method to calculate the adduct mass based on the formula
     private double calculateAdductMass(String adductFormula) throws IncorrectAdduct, NotFoundElement, IncorrectFormula {
