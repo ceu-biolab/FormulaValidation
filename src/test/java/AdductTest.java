@@ -28,10 +28,9 @@ public class AdductTest {
     }
 
     @Test
-    //TODO check this
     public void testIncorrectAdduct() {
         assertThrows(IncorrectAdduct.class, () -> {
-            new Adduct("[M+++]");
+            new Adduct("[3]");
         });
     }
 

@@ -1,8 +1,7 @@
+import enumerations.ChargeType;
 import exceptions.IncorrectAdduct;
 import exceptions.IncorrectFormula;
 import exceptions.NotFoundElement;
-
-import java.util.Objects;
 
 import java.io.IOException;
 import java.util.EnumMap;
@@ -13,9 +12,19 @@ import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.sf.jniinchi.INCHI_RET;
 import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.openscience.cdk.exception.CDKException;
+import org.openscience.cdk.exception.InvalidSmilesException;
+import org.openscience.cdk.inchi.InChIGeneratorFactory;
+import org.openscience.cdk.inchi.InChIToStructure;
+import org.openscience.cdk.interfaces.IAtom;
+import org.openscience.cdk.interfaces.IAtomContainer;
+import org.openscience.cdk.interfaces.IMolecularFormula;
+import org.openscience.cdk.silent.SilentChemObjectBuilder;
+import org.openscience.cdk.smiles.SmilesParser;
+import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
 public class Formula {
     private static final double ELECTRON_WEIGHT = 0.00054858;
@@ -25,7 +34,7 @@ public class Formula {
     private Map<Element.ElementType,Integer> elements;
     private String adduct;
     private int charge;
-    private String chargeType;
+    private ChargeType chargeType;
     private double monoisotopicMass;
     private double monoisotopicMassWithAdduct;
     private Map<String, Object> metadata;
@@ -43,7 +52,7 @@ public class Formula {
 
         this.charge = charge;
         if (chargeType.equals("") || chargeType.equals("+") || chargeType.equals("-")) {
-            this.chargeType = chargeType;
+            this.chargeType = ChargeType.fromSymbol(chargeType);
         } else {
             throw new IncorrectFormula("charge_type " + chargeType + " invalid. It should be +, - or empty");
         }
@@ -68,7 +77,7 @@ public class Formula {
 
         this.charge = charge;
         if (chargeType.equals("") || chargeType.equals("+") || chargeType.equals("-")) {
-            this.chargeType = chargeType;
+            this.chargeType = ChargeType.fromSymbol(chargeType);
         } else {
             throw new IncorrectFormula("charge_type " + chargeType + " invalid. It should be +, - or empty");
         }
@@ -87,7 +96,7 @@ public class Formula {
         this.elements = new HashMap<>();
         this.adduct = null;
         this.charge = 0;
-        this.chargeType = "";
+        this.chargeType = ChargeType.fromSymbol("");
         this.monoisotopicMass = 0.0;
         this.monoisotopicMassWithAdduct = 0.0;
         this.metadata = new HashMap<>();
@@ -114,7 +123,7 @@ public class Formula {
         // Handle charge
         String chargeStr = "";
         if (!this.chargeType.equals("")) {
-            chargeStr = this.charge == 1 ? this.chargeType : this.chargeType + this.charge;
+            chargeStr = this.charge == 1 ? this.chargeType.getSymbol() : this.chargeType.getSymbol() + this.charge;
         }
 
         // Handle adduct
@@ -237,7 +246,7 @@ public class Formula {
         for (Map.Entry<Element.ElementType, Integer> entry : newElements.entrySet()) {
             newElements.put(entry.getKey(), entry.getValue() * numToMultiply);
         }
-        return new Formula(newElements, this.adduct, this.charge, this.chargeType);
+        return new Formula(newElements, this.adduct, this.charge, this.chargeType.getSymbol());
     }
 
     public static Formula formulaFromStringHill(String formulaStr, String adduct, Map<String, Object> metadata) throws IncorrectFormula, NotFoundElement, IncorrectAdduct {
@@ -301,13 +310,13 @@ public class Formula {
         // Adjust for charge type
         double electronsWeight = 0.0;
         switch (chargeType) {
-            case "+":
+            case POSITIVE:
                 electronsWeight = -ELECTRON_WEIGHT * charge;
                 break;
-            case "-":
+            case NEGATIVE:
                 electronsWeight = ELECTRON_WEIGHT * charge;
                 break;
-            case "":
+            case NEUTRAL:
                 electronsWeight = 0.0;
                 break;
             default:
@@ -329,7 +338,6 @@ public class Formula {
             return monoisotopicMassWithAdduct;
         }
 
-        //TODO is this right?
         Adduct adductNew = new Adduct(this.adduct);
 
         // Calculate partial elements considering the adduct multiplier
@@ -342,18 +350,18 @@ public class Formula {
 
         // Calculate partial charge
         int partialCharge = this.chargeType.equals("+") ? this.charge : -this.charge;
-        String adductChargeType = adductNew.getAdductChargeType();
+        ChargeType adductChargeType = adductNew.getAdductChargeType();
         int adductCharge = adductNew.getAdductCharge();
         int finalCharge;
 
         switch (adductChargeType) {
-            case "+":
+            case POSITIVE:
                 finalCharge = partialCharge + adductCharge;
                 break;
-            case "-":
+            case NEGATIVE:
                 finalCharge = partialCharge - adductCharge;
                 break;
-            case "":
+            case NEUTRAL:
                 finalCharge = partialCharge;
                 break;
             default:
@@ -457,6 +465,65 @@ public class Formula {
         return (referenceMonoisotopicMass / 1_000_000.0) * ppm;
     }
 
+    public static Formula formulaFromSMILES(String smiles) throws IncorrectFormula {
+        try {
+            // Create a SMILES parser
+            SmilesParser smilesParser = new SmilesParser(SilentChemObjectBuilder.getInstance());
+
+            // Parse the SMILES string to get a molecule
+            IAtomContainer molecule = smilesParser.parseSmiles(smiles);
+
+            // Get the molecular formula
+            String molecularFormula = MolecularFormulaManipulator.getString(
+                    MolecularFormulaManipulator.getMolecularFormula(molecule)
+            );
+
+            // Calculate the total charge
+            int totalCharge = 0;
+            for (IAtom atom : molecule.atoms()) {
+                Integer charge = atom.getFormalCharge();
+                if (charge != null) {
+                    totalCharge += charge;
+                }
+            }
+
+            return formulaFromStringHill(molecularFormula, null, null);
+
+        } catch (InvalidSmilesException | NotFoundElement | IncorrectAdduct e) {
+            throw new IncorrectFormula("Invalid SMILES string: " + smiles);
+        }
+    }
+
+    public static Formula formulaFromInChI(String inchi) throws IncorrectFormula, NotFoundElement {
+        try {
+            // Use CDK's InChI generator factory to parse the InChI string
+            InChIGeneratorFactory factory = InChIGeneratorFactory.getInstance();
+            InChIToStructure inchiToStructure = factory.getInChIToStructure(inchi, SilentChemObjectBuilder.getInstance());
+
+            // Check if the InChI conversion was successful
+            if (inchiToStructure.getReturnStatus() != INCHI_RET.OKAY) {
+                throw new IncorrectFormula("Error: Could not parse InChI string.");
+            }
+
+            // Get the molecule from the InChI string
+            IAtomContainer molecule = inchiToStructure.getAtomContainer();
+
+            // Get the molecular formula from the molecule
+            IMolecularFormula molecularFormula = MolecularFormulaManipulator.getMolecularFormula(molecule);
+            String formulaStr = MolecularFormulaManipulator.getString(molecularFormula);
+
+            // Calculate the charge from the molecule
+            //int totalCharge = molecule.getCharge();
+
+            // Use your existing formulaFromStringHill to construct the Formula object
+            return formulaFromStringHill(formulaStr, null, null);
+        } catch (IncorrectAdduct e) {
+            throw new RuntimeException(e);
+        } catch (CDKException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public Map<Element.ElementType, Integer> getElements() {
         return elements;
     }
@@ -469,7 +536,7 @@ public class Formula {
         return charge;
     }
 
-    public String getChargeType() {
+    public ChargeType getChargeType() {
         return chargeType;
     }
 

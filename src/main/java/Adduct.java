@@ -1,3 +1,4 @@
+import enumerations.ChargeType;
 import exceptions.IncorrectAdduct;
 import exceptions.IncorrectFormula;
 import exceptions.NotFoundElement;
@@ -15,7 +16,7 @@ public class Adduct {
     private Formula formulaMinus;
     private double adductMass;
     private int charge;
-    private String chargeType;
+    private ChargeType chargeType;
     private String originalFormula;
 
     public Adduct(String adduct) throws IncorrectAdduct, NotFoundElement, IncorrectFormula {
@@ -38,10 +39,10 @@ public class Adduct {
 
             if (match.group(4) != null) {
                 this.charge = match.group(3).isEmpty() ? 1 : Integer.parseInt(match.group(3));
-                this.chargeType = match.group(4);
+                this.chargeType = ChargeType.fromSymbol(match.group(4));
             } else {
                 this.charge = 0;
-                this.chargeType = "";
+                this.chargeType = ChargeType.fromSymbol("");
             }
         } else {
             throw new IncorrectAdduct(adduct);
@@ -173,7 +174,7 @@ public class Adduct {
         return charge;
     }
 
-    public String getAdductChargeType() {
+    public ChargeType getAdductChargeType() {
         return chargeType;
     }
 
