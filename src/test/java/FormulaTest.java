@@ -1,9 +1,8 @@
+import classes.Formula;
 import exceptions.IncorrectAdduct;
 import exceptions.IncorrectFormula;
 import exceptions.NotFoundElement;
 import org.junit.jupiter.api.Test;
-
-import java.text.Normalizer;
 
 import static org.junit.jupiter.api.Assertions.*;
 public class FormulaTest {

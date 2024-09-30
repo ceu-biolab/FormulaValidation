@@ -1,3 +1,5 @@
+package classes;
+
 import enumerations.ChargeType;
 import exceptions.IncorrectAdduct;
 import exceptions.IncorrectFormula;
@@ -8,6 +10,11 @@ import java.util.regex.Pattern;
 import java.util.Map;
 import java.util.HashMap;
 
+/**
+ * The class represents a chemical adduct, including its formula, charge, and mass.
+ *  * It can parse adducts from string representations (e.g., '[M+CH3CN+H]+', '[M-3H2O+2H]2+', '[5M+Ca]2+'),
+ *  * and calculates the adduct mass and charge properties.
+ */
 public class Adduct {
     private static final double ELECTRON_WEIGHT = 0.00054858;
 
@@ -19,6 +26,13 @@ public class Adduct {
     private ChargeType chargeType;
     private String originalFormula;
 
+    /**
+     * Constructor for the classes.Adduct class.
+     * @param adduct String representation
+     * @throws IncorrectFormula If the formula contains invalid elements or values
+     * @throws NotFoundElement If the element is not found in the periodic table
+     * @throws IncorrectAdduct If the adduct provided is invalid
+     */
     public Adduct(String adduct) throws IncorrectAdduct, NotFoundElement, IncorrectFormula {
         /*
           adduct (String): A string like '[M+CH3CN+H]+', '[M-3H2O+2H]2+' or '[5M+Ca]2+'
@@ -48,17 +62,15 @@ public class Adduct {
             throw new IncorrectAdduct(adduct);
         }
     }
+
+    /**
+     *
+     * @param adductFormula String representing the formula within an adduct in the form +HCOOH-H, +Ca, +H, +CH3COOH-H, etc.
+     * @throws IncorrectFormula If the formula contains invalid elements or values
+     * @throws NotFoundElement If the element is not found in the periodic table
+     * @throws IncorrectAdduct If the adduct provided is invalid
+     */
     private void calculateAdductFormulaToAddAndSubtract(String adductFormula) throws IncorrectAdduct, NotFoundElement, IncorrectFormula {
-        /*
-         * Args:
-         * adductFormula (String): String representing the formula within an adduct in the form +HCOOH-H, +Ca, +H, +CH3COOH-H, etc.
-         * Returns:
-         * - The formula with the elements of the adduct to add (formulaPlus)
-         * - The formula with the elements of the adduct to subtract (formulaMinus)
-         * - The adduct mass.
-         * Raises:
-         * - IncorrectAdduct: if the adduct does not follow the format specified.
-         */
 
         this.adductMass = 0.0;
         // Regex to match symbols (+/-), optional numbers, and formulas
@@ -76,7 +88,7 @@ public class Adduct {
 
             int numberSubformulas = (numberStr == null || numberStr.isEmpty()) ? 1 : Integer.parseInt(numberStr);
 
-            // Convert the subformula string to a Formula object
+            // Convert the subformula string to a classes.Formula object
             Formula subformula = Formula.formulaFromStringHill(subformulaStr, null, null);
             Map<Element.ElementType, Integer> subformulaElements = subformula.getElements();
 
@@ -106,7 +118,7 @@ public class Adduct {
             }
         }
 
-        // Create Formula objects for the elements to add and subtract
+        // Create classes.Formula objects for the elements to add and subtract
         this.formulaPlus = new Formula(elementsToAdd, null, 0, null);
         this.formulaMinus = new Formula(elementsToSubtract, null, 0, null);
 
@@ -115,7 +127,14 @@ public class Adduct {
     }
 
 
-    // Method to calculate the adduct mass based on the formula
+    /**
+     * Calculate classes.Adduct with the classes.Formula in String form
+     * @param adductFormula
+     * @return Double value for the classes.Adduct
+     * @throws IncorrectFormula If the formula contains invalid elements or values
+     * @throws NotFoundElement If the element is not found in the periodic table
+     * @throws IncorrectAdduct If the adduct provided is invalid
+     */
     private double calculateAdductMass(String adductFormula) throws IncorrectAdduct, NotFoundElement, IncorrectFormula {
         String pattern = "([\\+-])(\\d*)([A-Za-z0-9]+)";
         Pattern regex = Pattern.compile(pattern);
@@ -143,10 +162,18 @@ public class Adduct {
         return formulaPlus.getMonoisotopicMass() - formulaMinus.getMonoisotopicMass();
     }
 
+    /**
+     * Get a copy of the multimer value
+     * @return A copy of the multimer value
+     */
     public int getMultimer() {
         return multimer;
     }
 
+    /**
+     * Get a copy of the String representation of a classes.Formula
+     * @return A copy of the String representation of a classes.Formula
+     */
     public String getFormulaStr() {
         StringBuilder formulaStr = new StringBuilder();
         if (formulaPlus != null) {
@@ -158,26 +185,52 @@ public class Adduct {
         return formulaStr.toString();
     }
 
+    /**
+     * Get a copy of the FormulaPlus
+     * @return A copy of the FormulaPlus
+     */
     public Formula getFormulaPlus() {
         return formulaPlus;
     }
 
+    /**
+     * Get a copy of the FormulaMinus
+     * @return A copy of the FormulaMinus
+     */
     public Formula getFormulaMinus() {
         return formulaMinus;
     }
 
+    /**
+     * Get a copy of the mass
+     * @return A copy of the mass
+     */
     public double getAdductMass() {
         return adductMass;
     }
 
+    /**
+     * Get a copy of the charge
+     * @return A copy of the charge
+     */
     public int getAdductCharge() {
         return charge;
     }
 
+    /**
+     * Get a copy of the charge type
+     * @return A copy of the charge type
+     */
     public ChargeType getAdductChargeType() {
         return chargeType;
     }
 
+    /**
+     * Compares this adduct to another object for equality.
+     *
+     * @param other The object to compare this adduct to.
+     * @return true if the adducts are equal, false otherwise.
+     */
     @Override
     public boolean equals(Object other) {
         if (other instanceof Adduct) {
@@ -191,6 +244,11 @@ public class Adduct {
         return false;
     }
 
+    /**
+     * Returns a string representation of the adduct, including multimer, charge, and charge type.
+     *
+     * @return A string representation of the adduct.
+     */
     @Override
     public String toString() {
         String multimerStr = (multimer == 1) ? "" : String.valueOf(multimer);

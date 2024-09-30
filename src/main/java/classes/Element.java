@@ -1,18 +1,283 @@
+package classes;
+
 import java.util.EnumMap;
 import java.util.Map;
 
+/**
+ * The classes.Element class represents various chemical elements and isotopes,
+ * storing their respective atomic weights for use in chemical formula calculations.
+ */
 public class Element {
 
-    // Enum for element types
+    /**
+     * Enum representing different types of elements and their isotopes.
+     */
     public enum ElementType {
-        H, H2, D, He, Li, Li6, Be, B, C, C13, C14, N, N15, O, O18, F, Ne, Na, Mg, Al, Si, P, S, Cl, Cl37, Ar, K, Ca, Sc,
-        Ti, V, Cr, Mn, Fe, Ni, Co, Cu, Zn, Ga, Ge, As, Se, Br, Kr, Rb, Sr, Y, Zr, Nb, Mo, Tc, Ru, Rh, Pd, Ag, Cd, In, Sn,
-        Sb, Te, I, Xe, Cs, Ba, La, Ce, Pr, Nd, Pm, Sm, Eu, Gd, Tb, Dy, Ho, Er, Tm, Yb, Lu, Hf, Ta, W, Re, Os, Ir, Pt,
-        Au, Hg, Tl, Pb, Bi, Po, At, Rn, Fr, Ra, Ac, Th, Pa, U, Np, Pu, Am, Cm, Bk, Cf, Es, Fm, Md, No, Lr, Rf, Db, Sg,
-        Bh, Hs, Mt, Ds, Rg, Cn, Uut, Nh, Fl, Uup, Mc, Lv, Uus, Ts, Uuo
+        /** Hydrogen */
+        H,
+        /** Diatomic Hydrogen (H2) */
+        H2,
+        /** Deuterium (D) */
+        D,
+        /** Helium */
+        He,
+        /** Lithium */
+        Li,
+        /** Lithium-6 (Li6) */
+        Li6,
+        /** Beryllium */
+        Be,
+        /** Boron */
+        B,
+        /** Carbon */
+        C,
+        /** Carbon-13 (C13) */
+        C13,
+        /** Carbon-14 (C14) */
+        C14,
+        /** Nitrogen */
+        N,
+        /** Nitrogen-15 (N15) */
+        N15,
+        /** Oxygen */
+        O,
+        /** Oxygen-18 (O18) */
+        O18,
+        /** Fluorine */
+        F,
+        /** Neon */
+        Ne,
+        /** Sodium */
+        Na,
+        /** Magnesium */
+        Mg,
+        /** Aluminum */
+        Al,
+        /** Silicon */
+        Si,
+        /** Phosphorus */
+        P,
+        /** Sulfur */
+        S,
+        /** Chlorine */
+        Cl,
+        /** Chlorine-37 (Cl37) */
+        Cl37,
+        /** Argon */
+        Ar,
+        /** Potassium */
+        K,
+        /** Calcium */
+        Ca,
+        /** Scandium */
+        Sc,
+        /** Titanium */
+        Ti,
+        /** Vanadium */
+        V,
+        /** Chromium */
+        Cr,
+        /** Manganese */
+        Mn,
+        /** Iron */
+        Fe,
+        /** Nickel */
+        Ni,
+        /** Cobalt */
+        Co,
+        /** Copper */
+        Cu,
+        /** Zinc */
+        Zn,
+        /** Gallium */
+        Ga,
+        /** Germanium */
+        Ge,
+        /** Arsenic */
+        As,
+        /** Selenium */
+        Se,
+        /** Bromine */
+        Br,
+        /** Krypton */
+        Kr,
+        /** Rubidium */
+        Rb,
+        /** Strontium */
+        Sr,
+        /** Yttrium */
+        Y,
+        /** Zirconium */
+        Zr,
+        /** Niobium */
+        Nb,
+        /** Molybdenum */
+        Mo,
+        /** Technetium */
+        Tc,
+        /** Ruthenium */
+        Ru,
+        /** Rhodium */
+        Rh,
+        /** Palladium */
+        Pd,
+        /** Silver */
+        Ag,
+        /** Cadmium */
+        Cd,
+        /** Indium */
+        In,
+        /** Tin */
+        Sn,
+        /** Antimony */
+        Sb,
+        /** Tellurium */
+        Te,
+        /** Iodine */
+        I,
+        /** Xenon */
+        Xe,
+        /** Cesium */
+        Cs,
+        /** Barium */
+        Ba,
+        /** Lanthanum */
+        La,
+        /** Cerium */
+        Ce,
+        /** Praseodymium */
+        Pr,
+        /** Neodymium */
+        Nd,
+        /** Promethium */
+        Pm,
+        /** Samarium */
+        Sm,
+        /** Europium */
+        Eu,
+        /** Gadolinium */
+        Gd,
+        /** Terbium */
+        Tb,
+        /** Dysprosium */
+        Dy,
+        /** Holmium */
+        Ho,
+        /** Erbium */
+        Er,
+        /** Thulium */
+        Tm,
+        /** Ytterbium */
+        Yb,
+        /** Lutetium */
+        Lu,
+        /** Hafnium */
+        Hf,
+        /** Tantalum */
+        Ta,
+        /** Tungsten */
+        W,
+        /** Rhenium */
+        Re,
+        /** Osmium */
+        Os,
+        /** Iridium */
+        Ir,
+        /** Platinum */
+        Pt,
+        /** Gold */
+        Au,
+        /** Mercury */
+        Hg,
+        /** Thallium */
+        Tl,
+        /** Lead */
+        Pb,
+        /** Bismuth */
+        Bi,
+        /** Polonium */
+        Po,
+        /** Astatine */
+        At,
+        /** Radon */
+        Rn,
+        /** Francium */
+        Fr,
+        /** Radium */
+        Ra,
+        /** Actinium */
+        Ac,
+        /** Thorium */
+        Th,
+        /** Protactinium */
+        Pa,
+        /** Uranium */
+        U,
+        /** Neptunium */
+        Np,
+        /** Plutonium */
+        Pu,
+        /** Americium */
+        Am,
+        /** Curium */
+        Cm,
+        /** Berkelium */
+        Bk,
+        /** Californium */
+        Cf,
+        /** Einsteinium */
+        Es,
+        /** Fermium */
+        Fm,
+        /** Mendelevium */
+        Md,
+        /** Nobelium */
+        No,
+        /** Lawrencium */
+        Lr,
+        /** Rutherfordium */
+        Rf,
+        /** Dubnium */
+        Db,
+        /** Seaborgium */
+        Sg,
+        /** Bohrium */
+        Bh,
+        /** Hassium */
+        Hs,
+        /** Meitnerium */
+        Mt,
+        /** Darmstadtium */
+        Ds,
+        /** Roentgenium */
+        Rg,
+        /** Copernicium */
+        Cn,
+        /** Nihonium (Uut) */
+        Uut,
+        /** Flerovium (Nh) */
+        Nh,
+        /** Moscovium (Fl) */
+        Fl,
+        /** Livermorium (Uup) */
+        Uup,
+        /** Tennessine (Mc) */
+        Mc,
+        /** Oganesson (Lv) */
+        Lv,
+        /** Ununseptium (Uus) */
+        Uus,
+        /** Ununoctium (Ts) */
+        Ts,
+        /** Ununoctium (Uuo) */
+        Uuo
     }
 
-    // Mapping from ElementType to their corresponding weights
+
+    /**
+     * A map linking each ElementType to its corresponding atomic weight.
+     * These values are based on atomic weights for isotopes of the elements.
+     */
     public static final Map<ElementType, Double> elementWeights = new EnumMap<>(ElementType.class);
 
     static {

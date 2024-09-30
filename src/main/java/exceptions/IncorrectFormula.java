@@ -1,11 +1,12 @@
 package exceptions;// IncorrectFormula.java
 
 /**
- * IncorrectFormula.java: Exception to raise when a chemical formula is not correct
- * Author: Alberto Gil de la Fuente
- * License: GPL License version 3
+ * Exception to raise when a chemical formula is not correct
  */
 public class IncorrectFormula extends Exception {
+    /**
+     * Input value
+     */
     private Object inputValue;
 
     /**
@@ -13,7 +14,7 @@ public class IncorrectFormula extends Exception {
      * @param inputValue The value causing the exception
      */
     public IncorrectFormula(Object inputValue) {
-        super("The Formula " + inputValue + " does not correspond to a correct formula");
+        super("The classes.Formula " + inputValue + " does not correspond to a correct formula");
         this.inputValue = inputValue;
     }
 
@@ -23,7 +24,7 @@ public class IncorrectFormula extends Exception {
      */
     @Override
     public String toString() {
-        return "The Formula " + inputValue + " does not correspond to a correct formula";
+        return "The classes.Formula " + inputValue + " does not correspond to a correct formula";
     }
 
     /**
@@ -32,7 +33,7 @@ public class IncorrectFormula extends Exception {
      */
     @Override
     public String getMessage() {
-        return "The Formula " + inputValue + " does not correspond to a correct formula";
+        return "The classes.Formula " + inputValue + " does not correspond to a correct formula";
     }
 }
 

@@ -1,11 +1,12 @@
 package exceptions;// NotFoundElement.java
 
 /**
- * NotFoundElement.java: Exception to raise when a chemical element is not present
- * Author: Alberto Gil de la Fuente
- * License: GPL License version 3
+ * Exception to raise when a chemical element is not present
  */
 public class NotFoundElement extends Exception {
+    /**
+     * Input value
+     */
     private Object inputValue;
 
     /**

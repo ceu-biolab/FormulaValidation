@@ -1,3 +1,6 @@
+
+package classes;
+
 import enumerations.ChargeType;
 import exceptions.IncorrectAdduct;
 import exceptions.IncorrectFormula;
@@ -26,19 +29,35 @@ import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
+/**
+ * The classes.Formula class represents a chemical formula and its associated porperties.
+ * It provides several methods to calculate monoisotopic mass, handle adducts and manipulate chemical formulas.
+ */
 public class Formula {
     private static final double ELECTRON_WEIGHT = 0.00054858;
     private static final String CC_URL = "https://www.chemcalc.org/chemcalc/mf";
-    private static final int DEFAULT_PPM = 50;
+    private static final int DEFAULT_PPM = 50; //Default part per million tolerance
 
-    private Map<Element.ElementType,Integer> elements;
+    private Map<Element.ElementType,Integer> elements; //Map of elements and their quantities
     private String adduct;
     private int charge;
-    private ChargeType chargeType;
+    private ChargeType chargeType; //Positive, negative of neutral
     private double monoisotopicMass;
     private double monoisotopicMassWithAdduct;
     private Map<String, Object> metadata;
 
+    /**
+     * Constructor for the classes.Formula class.
+     *
+     * @param elements The map of elements and their quantities in the formula.
+     * @param adduct The adduct string associated with the formula.
+     * @param charge The charge of the formula.
+     * @param chargeType The type of charge (positive, negative, or neutral).
+     * @param metadata Additional metadata for the formula.
+     * @throws IncorrectFormula If the formula contains invalid elements or values.
+     * @throws NotFoundElement If the element is not found in the periodic table.
+     * @throws IncorrectAdduct If the adduct provided is invalid.
+     */
     public Formula(Map<Element.ElementType, Integer> elements, String adduct, int charge, String chargeType, Map<String, Object> metadata) throws IncorrectFormula, NotFoundElement, IncorrectAdduct {
         this.metadata = metadata != null ? metadata : new HashMap<>();
 
@@ -66,6 +85,18 @@ public class Formula {
         this.monoisotopicMass = calculateMonoisotopicMass();
         this.monoisotopicMassWithAdduct = calculateMonoisotopicMassWithAdduct();
     }
+
+    /**
+     * Simplified constructor for the classes.Formula class with no metadata.
+     *
+     * @param elements The map of elements and their quantities in the formula.
+     * @param adduct The adduct string associated with the formula.
+     * @param charge The charge of the formula.
+     * @param chargeType The type of charge (positive, negative, or neutral).
+     * @throws IncorrectFormula If the formula contains invalid elements or values.
+     * @throws NotFoundElement If the element is not found in the periodic table.
+     * @throws IncorrectAdduct If the adduct provided is invalid.
+     */
     public Formula(Map<Element.ElementType, Integer> elements, String adduct, int charge, String chargeType) throws IncorrectFormula, IncorrectAdduct, NotFoundElement {
         this.elements = new HashMap<>();
         for (Map.Entry<Element.ElementType, Integer> entry : elements.entrySet()) {
@@ -92,6 +123,9 @@ public class Formula {
         this.monoisotopicMassWithAdduct = calculateMonoisotopicMassWithAdduct();
     }
 
+    /**
+     * Default constructor that creates an empty classes.Formula object.
+     */
     public Formula() {
         this.elements = new HashMap<>();
         this.adduct = null;
@@ -102,6 +136,13 @@ public class Formula {
         this.metadata = new HashMap<>();
     }
 
+    /**
+     * Compares this formula to another object for equality.
+     *
+     * @param other The object to compare this formula to.
+     * @return true if the formulas are equal, false otherwise.
+     */
+    @Override
     public boolean equals(Object other) {
         if (other instanceof Formula) {
             Formula otherFormula = (Formula) other;
@@ -111,6 +152,11 @@ public class Formula {
         return false;
     }
 
+    /**
+     * Returns a string representation of the formula, including elements, charge, and adduct.
+     *
+     * @return A string representation of the formula.
+     */
     @Override
     public String toString() {
         StringBuilder formulaString = new StringBuilder();
@@ -134,6 +180,13 @@ public class Formula {
     }
 
 
+    /**
+     * Return a string representation of the final formula plus or minus de the adduct.
+     * @return A string representation of the classes.Formula object (C12H3N3O+[M-H2O+H]+) in the format '[C12H2N3]+'
+     * @throws IncorrectFormula If the formula contains invalid elements or values.
+     * @throws NotFoundElement If the element is not found in the periodic table.
+     * @throws IncorrectAdduct If the adduct provided is invalid.
+     */
     public String getFinalFormulaWithAdduct() throws IncorrectFormula, IncorrectAdduct, NotFoundElement {
         /*
          * Returns a string representation of the final formula plus or minus the adduct.
@@ -209,10 +262,19 @@ public class Formula {
         }
     }
 
+    @Override
     public int hashCode() {
         return this.elements.hashCode();
     }
 
+    /**
+     * Addition of two Formulas
+     * @param other another formula to add the elements with the current one and keeps the adduct of the current formula
+     * @return classes.Formula resulting from the addition of the chemical elements of both formulas
+     * @throws IncorrectFormula If the formula contains invalid elements or values
+     * @throws NotFoundElement If the element is not found in the periodic table
+     * @throws IncorrectAdduct If the adduct provided is invalid
+     */
     public Formula add(Formula other) throws IncorrectFormula, IncorrectAdduct, NotFoundElement {
         Map<Element.ElementType, Integer> newElements = new HashMap<>(this.elements);
         for (Map.Entry<Element.ElementType, Integer> entry : other.elements.entrySet()) {
@@ -225,6 +287,14 @@ public class Formula {
         return new Formula(newElements, null, Math.abs(newCharge), newChargeType);
     }
 
+    /**
+     * Subtraction of two Formulas
+     * @param other another formula to subtract the elements from the current one and keeps the adduct of the current formula
+     * @return classes.Formula resulting from the subtraction of the chemical elements
+     * @throws IncorrectFormula If the formula contains invalid elements or values.
+     * @throws NotFoundElement If the element is not found in the periodic table.
+     * @throws IncorrectAdduct If the adduct provided is invalid.
+     */
     public Formula subtract(Formula other) throws IncorrectFormula, IncorrectAdduct, NotFoundElement {
         Map<Element.ElementType, Integer> newElements = new HashMap<>(this.elements);
         for (Map.Entry<Element.ElementType, Integer> entry : other.elements.entrySet()) {
@@ -241,6 +311,14 @@ public class Formula {
         return new Formula(newElements, null, Math.abs(newCharge), newChargeType);
     }
 
+    /**
+     * Multiplies a classes.Formula by a number
+     * @param numToMultiply number to multiply the formula by
+     * @return classes.Formula resulting from the multiplication operation with the number provided
+     * @throws IncorrectFormula If the formula contains invalid elements or values
+     * @throws NotFoundElement If the element is not found in the periodic table
+     * @throws IncorrectAdduct If the adduct provided is invalid
+     */
     public Formula multiply(int numToMultiply) throws IncorrectFormula, IncorrectAdduct, NotFoundElement {
         Map<Element.ElementType, Integer> newElements = new HashMap<>(this.elements);
         for (Map.Entry<Element.ElementType, Integer> entry : newElements.entrySet()) {
@@ -249,6 +327,16 @@ public class Formula {
         return new Formula(newElements, this.adduct, this.charge, this.chargeType.getSymbol());
     }
 
+    /**
+     * Static method to create a classes.Formula object from a chemical formula string in Hill notation.
+     * @param formulaStr A string representing a molecular formula in Hill notation. Example: 'C4H5N6Na'. Other example 'C4H5N6Na+'
+     * @param adduct A string representing an adduct in the form '[M+C2H2O-H]-', '[M-3H2O+2H]2+' or '[5M+Ca]2+' where the charge is specified at the end
+     * @param metadata Optional argument to include a dict of metadata, defaults to None.
+     * @return A new instance of the classes.Formula class with the elements specified in the string
+     * @throws IncorrectFormula If the number of appearances is &lt;=0 or if the formula contains elements that are not valid chemical elements
+     * @throws NotFoundElement If the element is not found in the periodic table
+     * @throws IncorrectAdduct If the adduct provided is invalid
+     */
     public static Formula formulaFromStringHill(String formulaStr, String adduct, Map<String, Object> metadata) throws IncorrectFormula, NotFoundElement, IncorrectAdduct {
         if (!formulaStr.matches("^[\\[?a-zA-Z0-9\\]?]+(\\(?[+-]?\\d*\\)?)?$")) {
             throw new IncorrectFormula(formulaStr);
@@ -267,7 +355,7 @@ public class Formula {
             try {
                 elementType = Element.ElementType.valueOf(elementSymbol);  // Converts the string to an ElementType
             } catch (IllegalArgumentException e) {
-                throw new NotFoundElement("Element " + elementSymbol + " not found");
+                throw new NotFoundElement("classes.Element " + elementSymbol + " not found");
             }
 
             // Put the ElementType in the map with its appearances
@@ -297,6 +385,11 @@ public class Formula {
         return new Formula(elements, adduct, charge, chargeType, metadata);
     }
 
+    /**
+     * Calculates the monoisotopic mass of the formula
+     * @return double value of the monoisotopic mass
+     * @throws IncorrectFormula If the formula contains invalid elements or values.
+     */
     private double calculateMonoisotopicMass() throws IncorrectFormula {
         double monoisotopicMass = 0.0;
 
@@ -332,6 +425,13 @@ public class Formula {
         return monoisotopicMass;
     }
 
+    /**
+     * Calculates the monoisotopic mass of the formula taking into account the adduct
+     * @return double value of the monoisotopic mass
+     * @throws IncorrectFormula If the formula contains invalid elements or values
+     * @throws NotFoundElement If the element is not found in the periodic table
+     * @throws IncorrectAdduct If the adduct provided is invalid
+     */
     private double calculateMonoisotopicMassWithAdduct() throws IncorrectFormula, IncorrectAdduct, NotFoundElement {
         double monoisotopicMassWithAdduct = this.getMonoisotopicMass();
         if (this.adduct == null) {
@@ -404,6 +504,17 @@ public class Formula {
         return monoisotopicMassWithAdduct;
     }
 
+    /**
+     * Static method to create a classes.Formula object from a chemical formula string.
+     * @param formulaStr A string representing a molecular formula. Example: 'C4H5N6Na'
+     * @param adduct A string representing an adduct in the form '[M+C2H2O-H]-', '[M-3H2O+2H]2+' or '[5M+Ca]2+' where the charge is specified at the end
+     * @param noApi Disables api calls for formula resolution
+     * @param metadata Optional argument to include a dict of metadata, defaults to None
+     * @return A new instance of the classes.Formula class with the elements specified in the string
+     * @throws IncorrectFormula If the number of appearances is &lt;=0 or if the formula contains elements that are not valid chemical elements
+     * @throws NotFoundElement If the element is not found in the periodic table
+     * @throws IncorrectAdduct If the adduct provided is invalid
+     */
     public static Formula formulaFromString(String formulaStr, String adduct, boolean noApi, Map<String, Object> metadata) throws IncorrectFormula, NotFoundElement, IncorrectAdduct {
         try {
             // Attempt to process the formula directly using formulaFromStringHill
@@ -432,7 +543,7 @@ public class Formula {
                 // Extract the molecular formula in Hill notation
                 String mfHill = data.get("mf").asText();
 
-                // Use the Hill notation formula to create the Formula object
+                // Use the Hill notation formula to create the classes.Formula object
                 return formulaFromStringHill(mfHill, adduct, metadata);
             } catch (IOException e) {
                 throw new IncorrectFormula("Error connecting to ChemCalc API: " + e.getMessage());
@@ -443,28 +554,63 @@ public class Formula {
         }
     }
 
+    /**
+     * Check if the monoisotopic mass of the formula is within a specified mass tolerance of an external mass.
+     * @param externalMass The external monoisotopic mass to compare with the formula's mass
+     * @param massToleranceInPpm The mass tolerance in parts per million (ppm) for the comparison
+     * @return True if the external mass is within the specified tolerance of the formula's mass, otherwise False
+     */
     public boolean checkMonoisotopicMass(double externalMass, double massToleranceInPpm) {
         double absValueDelta = ppmToAbsolute(getMonoisotopicMass(), massToleranceInPpm);
         return Math.abs(getMonoisotopicMass() - externalMass) <= absValueDelta;
     }
 
+    /**
+     * Check if the monoisotopic mass of the formula, considering the adduct, is within a specified mass tolerance of an external mass.
+     * @param externalMass The external monoisotopic mass to compare with the formula's mass with the adduct
+     * @param massToleranceInPpm The mass tolerance in parts per million (ppm) for the comparison
+     * @return True if the external mass is within the specified tolerance of the formula's mass with the adduct, otherwise False
+     */
     public boolean checkMonoisotopicMassWithAdduct(double externalMass, double massToleranceInPpm) {
         double absValueDelta = ppmToAbsolute(getMonoisotopicMassWithAdduct(), massToleranceInPpm);
         return Math.abs(getMonoisotopicMassWithAdduct() - externalMass) <= absValueDelta;
     }
 
+    /**
+     *
+     * @param referenceMonoisotopicMass Monoisotopic mass of reference
+     * @return The ppms between the monoisotopic mass of the formula taking into account the adduct and the experimental mass detected
+     */
     public double ppmDifferenceWithExpMass(double referenceMonoisotopicMass) {
         return absoluteToPpm(getMonoisotopicMassWithAdduct(), referenceMonoisotopicMass);
     }
 
+    /**
+     *
+     * @param referenceMonoisotopicMass Monoisotopic mass of reference
+     * @param massToCompare Mass to compare
+     * @return The ppms between the reference_monoisotopic_mass mass and mass_to_compare
+     */
     public static double absoluteToPpm(double referenceMonoisotopicMass, double massToCompare) {
         return Math.abs((referenceMonoisotopicMass - massToCompare) / referenceMonoisotopicMass) * 1_000_000.0;
     }
 
+    /**
+     *
+     * @param referenceMonoisotopicMass Monoisotopic mass of reference
+     * @param ppm ppm of the reference monoisotopic mass
+     * @return The absolute value of the ppm calculated
+     */
     public static double ppmToAbsolute(double referenceMonoisotopicMass, double ppm) {
         return (referenceMonoisotopicMass / 1_000_000.0) * ppm;
     }
 
+    /**
+     * Static method to create a classes.Formula object from a SMILES (Simplified Molecular Input Line Entry System) string.
+     * @param smiles A string representing a molecular structure in SMILES notation. Example: CCCCCCC[C@@H](C/C=C/CCC(=O)NC/C(=C/Cl)/[C@@]12[C@@H](O1)[C@H](CCC2=O)O)OC
+     * @return A new instance of the classes.Formula class according to the molecular structure
+     * @throws IncorrectFormula If the SMILES string does not represent a valid molecular structure
+     */
     public static Formula formulaFromSMILES(String smiles) throws IncorrectFormula {
         try {
             // Create a SMILES parser
@@ -494,6 +640,13 @@ public class Formula {
         }
     }
 
+    /**
+     * Static method to create a classes.Formula object from an InChI (International Chemical Identifier) string.
+     * @param inchi A string representing a molecular structure in InChI notation. Example: InChI=1S/C45H73N5O10S3/c1-14-17-24(6)34(52)26(8)37-25(7)30(58-13)18-31-46-29(19-61-31)39-49-45(12,21-62-39)43-50-44(11,20-63-43)42(57)48-32(22(4)15-2)35(53)27(9)40(55)59-36(23(5)16-3)38(54)47-33(28(10)51)41(56)60-37/h19,22-28,30,32-37,51-53H,14-18,20-21H2,1-13H3,(H,47,54)(H,48,57)/t22-,23-,24+,25-,26-,27+,28+,30-,32-,33-,34-,35-,36-,37-,44+,45+/m0/s1
+     * @return A new instance of the classes.Formula class according to the molecular structure
+     * @throws IncorrectFormula If the inchi string does not represent a valid molecular structure
+     * @throws NotFoundElement If the element is not found in the periodic table
+     */
     public static Formula formulaFromInChI(String inchi) throws IncorrectFormula, NotFoundElement {
         try {
             // Use CDK's InChI generator factory to parse the InChI string
@@ -515,7 +668,7 @@ public class Formula {
             // Calculate the charge from the molecule
             //int totalCharge = molecule.getCharge();
 
-            // Use your existing formulaFromStringHill to construct the Formula object
+            // Use your existing formulaFromStringHill to construct the classes.Formula object
             return formulaFromStringHill(formulaStr, null, null);
         } catch (IncorrectAdduct e) {
             throw new RuntimeException(e);
@@ -524,30 +677,58 @@ public class Formula {
         }
     }
 
+    /**
+     * Get a copy of the map of chemical elements and their counts in the formula.
+     * @return A map containing chemical elements as keys and their respective counts as values
+     */
     public Map<Element.ElementType, Integer> getElements() {
         return elements;
     }
 
+    /**
+     * Get a copy of the adduct of the classes.Formula
+     * @return A copy of the adduct in String form
+     */
     public String getAdduct() {
         return adduct;
     }
 
+    /**
+     * Get a copy of the charge
+     * @return A copy of the charge
+     */
     public int getCharge() {
         return charge;
     }
 
+    /**
+     * Get a copy of the ChargeType
+     * @return A copy of the ChargeType
+     */
     public ChargeType getChargeType() {
         return chargeType;
     }
 
+    /**
+     * Get a copy of the monoitopic mass
+     * @return A copy of the monoisotopic mass
+     */
     public double getMonoisotopicMass() {
         return monoisotopicMass;
     }
 
+    /**
+     * Get a copy of the monoisotopic mass taking into account the adduct
+     * @return A copy of the monoisotopic mass taking into account the adduct
+     */
     public double getMonoisotopicMassWithAdduct() {
         return monoisotopicMassWithAdduct;
     }
 
+    /**
+     * Get a copy of the additional metadata info
+     * @return A copy of the additional metadata info
+     */
     public Map<String, Object> getMetadata() {
         return metadata;
     }
