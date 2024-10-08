@@ -1,7 +1,11 @@
-package exceptions;// IncorrectFormula.java
+package ceu.biolab;// IncorrectFormula.java
 
 /**
- * Exception to raise when a chemical formula is not correct
+ *  Exception to raise when a chemical formula is not correct
+ *
+ * @author Blanca Pueche Granados
+ * @author Alberto Gil-de-la-Fuente
+ * @since 0.0
  */
 public class IncorrectFormula extends Exception {
     /**
@@ -14,7 +18,7 @@ public class IncorrectFormula extends Exception {
      * @param inputValue The value causing the exception
      */
     public IncorrectFormula(Object inputValue) {
-        super("The classes.Formula " + inputValue + " does not correspond to a correct formula");
+        super("The ceu.biolab.Formula " + inputValue + " does not correspond to a correct formula");
         this.inputValue = inputValue;
     }
 
@@ -24,7 +28,7 @@ public class IncorrectFormula extends Exception {
      */
     @Override
     public String toString() {
-        return "The classes.Formula " + inputValue + " does not correspond to a correct formula";
+        return "The ceu.biolab.Formula " + inputValue + " does not correspond to a correct formula";
     }
 
     /**
@@ -33,7 +37,7 @@ public class IncorrectFormula extends Exception {
      */
     @Override
     public String getMessage() {
-        return "The classes.Formula " + inputValue + " does not correspond to a correct formula";
+        return "The ceu.biolab.Formula " + inputValue + " does not correspond to a correct formula";
     }
 }
 

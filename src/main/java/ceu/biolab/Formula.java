@@ -1,10 +1,5 @@
 
-package classes;
-
-import enumerations.ChargeType;
-import exceptions.IncorrectAdduct;
-import exceptions.IncorrectFormula;
-import exceptions.NotFoundElement;
+package ceu.biolab;
 
 import java.io.IOException;
 import java.util.EnumMap;
@@ -15,6 +10,7 @@ import java.util.regex.Pattern;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.github.dan2097.jnainchi.InchiStatus;
 import net.sf.jniinchi.INCHI_RET;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -30,8 +26,12 @@ import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
 /**
- * The classes.Formula class represents a chemical formula and its associated porperties.
+ * The ceu.biolab.Formula class represents a chemical formula and its associated porperties.
  * It provides several methods to calculate monoisotopic mass, handle adducts and manipulate chemical formulas.
+ *
+ * @author Blanca Pueche Granados
+ * @author Alberto Gil-de-la-Fuente
+ * @since 0.0
  */
 public class Formula {
     private static final double ELECTRON_WEIGHT = 0.00054858;
@@ -47,13 +47,13 @@ public class Formula {
     private Map<String, Object> metadata;
 
     /**
-     * Constructor for the classes.Formula class.
+     * Constructor for the ceu.biolab.Formula class.
      *
      * @param elements The map of elements and their quantities in the formula.
      * @param adduct The adduct string associated with the formula.
      * @param charge The charge of the formula.
      * @param chargeType The type of charge (positive, negative, or neutral).
-     * @param metadata Additional metadata for the formula.
+     * @param metadata Additional metadata for the formula, usually a String representation of the formula used to create Formula.
      * @throws IncorrectFormula If the formula contains invalid elements or values.
      * @throws NotFoundElement If the element is not found in the periodic table.
      * @throws IncorrectAdduct If the adduct provided is invalid.
@@ -87,7 +87,7 @@ public class Formula {
     }
 
     /**
-     * Simplified constructor for the classes.Formula class with no metadata.
+     * Simplified constructor for the ceu.biolab.Formula class with no metadata.
      *
      * @param elements The map of elements and their quantities in the formula.
      * @param adduct The adduct string associated with the formula.
@@ -121,19 +121,6 @@ public class Formula {
 
         this.monoisotopicMass = calculateMonoisotopicMass();
         this.monoisotopicMassWithAdduct = calculateMonoisotopicMassWithAdduct();
-    }
-
-    /**
-     * Default constructor that creates an empty classes.Formula object.
-     */
-    public Formula() {
-        this.elements = new HashMap<>();
-        this.adduct = null;
-        this.charge = 0;
-        this.chargeType = ChargeType.fromSymbol("");
-        this.monoisotopicMass = 0.0;
-        this.monoisotopicMassWithAdduct = 0.0;
-        this.metadata = new HashMap<>();
     }
 
     /**
@@ -182,7 +169,7 @@ public class Formula {
 
     /**
      * Return a string representation of the final formula plus or minus de the adduct.
-     * @return A string representation of the classes.Formula object (C12H3N3O+[M-H2O+H]+) in the format '[C12H2N3]+'
+     * @return A string representation of the ceu.biolab.Formula object (C12H3N3O+[M-H2O+H]+) in the format '[C12H2N3]+'
      * @throws IncorrectFormula If the formula contains invalid elements or values.
      * @throws NotFoundElement If the element is not found in the periodic table.
      * @throws IncorrectAdduct If the adduct provided is invalid.
@@ -270,7 +257,7 @@ public class Formula {
     /**
      * Addition of two Formulas
      * @param other another formula to add the elements with the current one and keeps the adduct of the current formula
-     * @return classes.Formula resulting from the addition of the chemical elements of both formulas
+     * @return ceu.biolab.Formula resulting from the addition of the chemical elements of both formulas
      * @throws IncorrectFormula If the formula contains invalid elements or values
      * @throws NotFoundElement If the element is not found in the periodic table
      * @throws IncorrectAdduct If the adduct provided is invalid
@@ -283,15 +270,14 @@ public class Formula {
         int newCharge = this.chargeType.equals("-") ? -this.charge : this.charge;
         newCharge = other.chargeType.equals("-") ? newCharge - other.charge : newCharge + other.charge;
         String newChargeType = newCharge == 0 ? "" : (newCharge > 0 ? "+" : "-");
-        //TODO keep og adduct
-        return new Formula(newElements, null, Math.abs(newCharge), newChargeType);
+        return new Formula(newElements, this.adduct, Math.abs(newCharge), newChargeType);
     }
 
     /**
      * Subtraction of two Formulas
      * @param other another formula to subtract the elements from the current one and keeps the adduct of the current formula
-     * @return classes.Formula resulting from the subtraction of the chemical elements
-     * @throws IncorrectFormula If the formula contains invalid elements or values.
+     * @return ceu.biolab.Formula resulting from the subtraction of the chemical elements
+     * @throws IncorrectFormula If the formula contains invalid elements or values, such as negative elements
      * @throws NotFoundElement If the element is not found in the periodic table.
      * @throws IncorrectAdduct If the adduct provided is invalid.
      */
@@ -308,13 +294,13 @@ public class Formula {
         int newCharge = this.chargeType.equals("-") ? -this.charge : this.charge;
         newCharge = other.chargeType.equals("-") ? newCharge + other.charge : newCharge - other.charge;
         String newChargeType = newCharge == 0 ? "" : (newCharge > 0 ? "+" : "-");
-        return new Formula(newElements, null, Math.abs(newCharge), newChargeType);
+        return new Formula(newElements, this.adduct, Math.abs(newCharge), newChargeType);
     }
 
     /**
-     * Multiplies a classes.Formula by a number
+     * Multiplies a Formula by a number
      * @param numToMultiply number to multiply the formula by
-     * @return classes.Formula resulting from the multiplication operation with the number provided
+     * @return ceu.biolab.Formula resulting from the multiplication operation with the number provided
      * @throws IncorrectFormula If the formula contains invalid elements or values
      * @throws NotFoundElement If the element is not found in the periodic table
      * @throws IncorrectAdduct If the adduct provided is invalid
@@ -328,11 +314,11 @@ public class Formula {
     }
 
     /**
-     * Static method to create a classes.Formula object from a chemical formula string in Hill notation.
+     * Static method to create a ceu.biolab.Formula object from a chemical formula string in Hill notation.
      * @param formulaStr A string representing a molecular formula in Hill notation. Example: 'C4H5N6Na'. Other example 'C4H5N6Na+'
      * @param adduct A string representing an adduct in the form '[M+C2H2O-H]-', '[M-3H2O+2H]2+' or '[5M+Ca]2+' where the charge is specified at the end
      * @param metadata Optional argument to include a dict of metadata, defaults to None.
-     * @return A new instance of the classes.Formula class with the elements specified in the string
+     * @return A new instance of the ceu.biolab.Formula class with the elements specified in the string
      * @throws IncorrectFormula If the number of appearances is &lt;=0 or if the formula contains elements that are not valid chemical elements
      * @throws NotFoundElement If the element is not found in the periodic table
      * @throws IncorrectAdduct If the adduct provided is invalid
@@ -355,7 +341,7 @@ public class Formula {
             try {
                 elementType = Element.ElementType.valueOf(elementSymbol);  // Converts the string to an ElementType
             } catch (IllegalArgumentException e) {
-                throw new NotFoundElement("classes.Element " + elementSymbol + " not found");
+                throw new NotFoundElement("ceu.biolab.Element " + elementSymbol + " not found");
             }
 
             // Put the ElementType in the map with its appearances
@@ -505,12 +491,12 @@ public class Formula {
     }
 
     /**
-     * Static method to create a classes.Formula object from a chemical formula string.
+     * Static method to create a ceu.biolab.Formula object from a chemical formula string.
      * @param formulaStr A string representing a molecular formula. Example: 'C4H5N6Na'
      * @param adduct A string representing an adduct in the form '[M+C2H2O-H]-', '[M-3H2O+2H]2+' or '[5M+Ca]2+' where the charge is specified at the end
      * @param noApi Disables api calls for formula resolution
      * @param metadata Optional argument to include a dict of metadata, defaults to None
-     * @return A new instance of the classes.Formula class with the elements specified in the string
+     * @return A new instance of the ceu.biolab.Formula class with the elements specified in the string
      * @throws IncorrectFormula If the number of appearances is &lt;=0 or if the formula contains elements that are not valid chemical elements
      * @throws NotFoundElement If the element is not found in the periodic table
      * @throws IncorrectAdduct If the adduct provided is invalid
@@ -543,7 +529,7 @@ public class Formula {
                 // Extract the molecular formula in Hill notation
                 String mfHill = data.get("mf").asText();
 
-                // Use the Hill notation formula to create the classes.Formula object
+                // Use the Hill notation formula to create the ceu.biolab.Formula object
                 return formulaFromStringHill(mfHill, adduct, metadata);
             } catch (IOException e) {
                 throw new IncorrectFormula("Error connecting to ChemCalc API: " + e.getMessage());
@@ -606,9 +592,9 @@ public class Formula {
     }
 
     /**
-     * Static method to create a classes.Formula object from a SMILES (Simplified Molecular Input Line Entry System) string.
+     * Static method to create a ceu.biolab.Formula object from a SMILES (Simplified Molecular Input Line Entry System) string.
      * @param smiles A string representing a molecular structure in SMILES notation. Example: CCCCCCC[C@@H](C/C=C/CCC(=O)NC/C(=C/Cl)/[C@@]12[C@@H](O1)[C@H](CCC2=O)O)OC
-     * @return A new instance of the classes.Formula class according to the molecular structure
+     * @return A new instance of the ceu.biolab.Formula class according to the molecular structure
      * @throws IncorrectFormula If the SMILES string does not represent a valid molecular structure
      */
     public static Formula formulaFromSMILES(String smiles) throws IncorrectFormula {
@@ -641,9 +627,9 @@ public class Formula {
     }
 
     /**
-     * Static method to create a classes.Formula object from an InChI (International Chemical Identifier) string.
+     * Static method to create a ceu.biolab.Formula object from an InChI (International Chemical Identifier) string.
      * @param inchi A string representing a molecular structure in InChI notation. Example: InChI=1S/C45H73N5O10S3/c1-14-17-24(6)34(52)26(8)37-25(7)30(58-13)18-31-46-29(19-61-31)39-49-45(12,21-62-39)43-50-44(11,20-63-43)42(57)48-32(22(4)15-2)35(53)27(9)40(55)59-36(23(5)16-3)38(54)47-33(28(10)51)41(56)60-37/h19,22-28,30,32-37,51-53H,14-18,20-21H2,1-13H3,(H,47,54)(H,48,57)/t22-,23-,24+,25-,26-,27+,28+,30-,32-,33-,34-,35-,36-,37-,44+,45+/m0/s1
-     * @return A new instance of the classes.Formula class according to the molecular structure
+     * @return A new instance of the ceu.biolab.Formula class according to the molecular structure
      * @throws IncorrectFormula If the inchi string does not represent a valid molecular structure
      * @throws NotFoundElement If the element is not found in the periodic table
      */
@@ -654,8 +640,12 @@ public class Formula {
             InChIToStructure inchiToStructure = factory.getInChIToStructure(inchi, SilentChemObjectBuilder.getInstance());
 
             // Check if the InChI conversion was successful
-            if (inchiToStructure.getReturnStatus() != INCHI_RET.OKAY) {
+            if (inchiToStructure.getStatus() == InchiStatus.ERROR) {
                 throw new IncorrectFormula("Error: Could not parse InChI string.");
+            }
+            else if (inchiToStructure.getStatus() != InchiStatus.WARNING) {
+                // TODO LOG SOMEHOW TO SEE WHAT HAPPENS. STILL TO THINK ABOUT IT
+                System.out.println("Warning generating the InChI");
             }
 
             // Get the molecule from the InChI string
@@ -668,7 +658,7 @@ public class Formula {
             // Calculate the charge from the molecule
             //int totalCharge = molecule.getCharge();
 
-            // Use your existing formulaFromStringHill to construct the classes.Formula object
+            // Use your existing formulaFromStringHill to construct the ceu.biolab.Formula object
             return formulaFromStringHill(formulaStr, null, null);
         } catch (IncorrectAdduct e) {
             throw new RuntimeException(e);
@@ -678,7 +668,7 @@ public class Formula {
     }
 
     /**
-     * Get a copy of the map of chemical elements and their counts in the formula.
+     * Get the map of chemical elements and their counts in the formula.
      * @return A map containing chemical elements as keys and their respective counts as values
      */
     public Map<Element.ElementType, Integer> getElements() {
@@ -686,50 +676,50 @@ public class Formula {
     }
 
     /**
-     * Get a copy of the adduct of the classes.Formula
-     * @return A copy of the adduct in String form
+     * Get the adduct of the ceu.biolab.Formula
+     * @return The adduct in String form
      */
     public String getAdduct() {
         return adduct;
     }
 
     /**
-     * Get a copy of the charge
-     * @return A copy of the charge
+     * Get the charge
+     * @return The charge
      */
     public int getCharge() {
         return charge;
     }
 
     /**
-     * Get a copy of the ChargeType
-     * @return A copy of the ChargeType
+     * Get the ChargeType
+     * @return The ChargeType
      */
     public ChargeType getChargeType() {
         return chargeType;
     }
 
     /**
-     * Get a copy of the monoitopic mass
-     * @return A copy of the monoisotopic mass
+     * Get the monoitopic mass
+     * @return The monoisotopic mass
      */
     public double getMonoisotopicMass() {
         return monoisotopicMass;
     }
 
     /**
-     * Get a copy of the monoisotopic mass taking into account the adduct
-     * @return A copy of the monoisotopic mass taking into account the adduct
+     * Get the monoisotopic mass taking into account the adduct
+     * @return The monoisotopic mass taking into account the adduct
      */
     public double getMonoisotopicMassWithAdduct() {
         return monoisotopicMassWithAdduct;
     }
 
     /**
-     * Get a copy of the additional metadata info
+     * Get coppy the additional metadata info
      * @return A copy of the additional metadata info
      */
     public Map<String, Object> getMetadata() {
-        return metadata;
+        return new HashMap<>(metadata);
     }
 }

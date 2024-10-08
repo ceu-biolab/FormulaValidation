@@ -1,7 +1,7 @@
-import classes.Formula;
-import exceptions.IncorrectAdduct;
-import exceptions.IncorrectFormula;
-import exceptions.NotFoundElement;
+import ceu.biolab.Formula;
+import ceu.biolab.IncorrectAdduct;
+import ceu.biolab.IncorrectFormula;
+import ceu.biolab.NotFoundElement;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -93,7 +93,6 @@ public class FormulaTest {
         Formula formula = Formula.formulaFromStringHill("H2O", "[M+H]+", null);
         double externalMass = 19.01776;  // Expected monoisotopic mass with adduct [M+H]+ for H2O
         double massToleranceInPpm = 10.0;  // 10 ppm tolerance
-
 
         assertTrue(formula.checkMonoisotopicMassWithAdduct(externalMass, massToleranceInPpm),
                 "Expected the monoisotopic mass with adduct to be within tolerance.");

@@ -1,8 +1,13 @@
 
-package exceptions;
+package ceu.biolab;
+
 
 /**
- * Raised when the adduct format is not valid. An adduct is represented by '[M+CH3CN+H]+', '[M-3H2O+2H]2+' or '[5M+Ca]2+'
+ *  Raised when the adduct format is not valid. An adduct is represented by '[M+CH3CN+H]+', '[M-3H2O+2H]2+' or '[5M+Ca]2+'
+ *
+ * @author Blanca Pueche Granados
+ * @author Alberto Gil-de-la-Fuente
+ * @since 0.0
  */
 public class IncorrectAdduct extends Exception {
     /**

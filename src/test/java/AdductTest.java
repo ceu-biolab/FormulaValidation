@@ -1,5 +1,6 @@
-import classes.Adduct;
-import exceptions.IncorrectAdduct;
+import ceu.biolab.Adduct;
+import ceu.biolab.ChargeType;
+import ceu.biolab.IncorrectAdduct;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -10,7 +11,7 @@ public class AdductTest {
         Adduct adduct = new Adduct("[M+H]+");
         assertEquals(1, adduct.getMultimer());
         assertEquals(1, adduct.getAdductCharge());
-        assertEquals("+", adduct.getAdductChargeType());
+        assertEquals(ChargeType.POSITIVE, adduct.getAdductChargeType());
     }
 
     @Test
@@ -18,7 +19,7 @@ public class AdductTest {
         Adduct adduct = new Adduct("[M+Na]2+");
         assertEquals(1, adduct.getMultimer());
         assertEquals(2, adduct.getAdductCharge());
-        assertEquals("+", adduct.getAdductChargeType());
+        assertEquals(ChargeType.POSITIVE, adduct.getAdductChargeType());
     }
 
     @Test
@@ -37,9 +38,12 @@ public class AdductTest {
 
     @Test
     public void testAdductMassCalculation() throws Exception {
-        Adduct adduct = new Adduct("[M+H]+");
+        Adduct adduct = new Adduct("[M+H-H2O]+");
         double mass = adduct.getAdductMass();
-        //H mass is 1.03 aprox
-        assertTrue(mass > 1);
+        System.out.println(mass);
+        System.out.println(adduct.getFormulaPlus());
+        System.out.println(adduct.getFormulaMinus());
+        //H mass is 1.01 aprox
+        assertTrue(mass < -17 && mass > -17.01);
     }
 }

@@ -1,11 +1,14 @@
-package classes;
+package ceu.biolab;
 
 import java.util.EnumMap;
 import java.util.Map;
 
 /**
- * The classes.Element class represents various chemical elements and isotopes,
- * storing their respective atomic weights for use in chemical formula calculations.
+ * The ceu.biolab.Element class represents various chemical elements and isotopes, storing their respective atomic weights for use in chemical formula calculations.
+ *
+ *  @author Blanca Pueche Granados
+ * @author Alberto Gil-de-la-Fuente
+ * @since 0.0
  */
 public class Element {
 

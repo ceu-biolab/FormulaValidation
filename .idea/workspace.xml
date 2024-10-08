@@ -4,16 +4,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="daffc9fe-f8eb-46a7-bb38-56c65b017579" name="Changes" comment="tests finished">
+    <list default="true" id="daffc9fe-f8eb-46a7-bb38-56c65b017579" name="Changes" comment="finished documentation">
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Adduct.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/classes/Adduct.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Element.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/classes/Element.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/Formula.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/classes/Formula.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/enumerations/ChargeType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/enumerations/ChargeType.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/exceptions/IncorrectAdduct.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/exceptions/IncorrectAdduct.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/exceptions/IncorrectFormula.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/exceptions/IncorrectFormula.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/exceptions/NotFoundElement.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/exceptions/NotFoundElement.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/classes/Adduct.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ceu/biolab/Adduct.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/classes/Element.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ceu/biolab/Element.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/classes/Formula.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ceu/biolab/Formula.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/enumerations/ChargeType.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ceu/biolab/ChargeType.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/exceptions/IncorrectAdduct.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ceu/biolab/IncorrectAdduct.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/exceptions/IncorrectFormula.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ceu/biolab/IncorrectFormula.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/exceptions/NotFoundElement.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/ceu/biolab/NotFoundElement.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/java/AdductTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/AdductTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/java/ElementTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/ElementTest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/test/java/FormulaTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/FormulaTest.java" afterDir="false" />
@@ -49,83 +50,131 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
-    &quot;last_opened_file_path&quot;: &quot;C:/Users/blanc/OneDrive/Escritorio/Telemedicine/BitalinoDemo&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.OpenProjectViewOnStart": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "WebServerToolWindowFactoryState": "false",
+    "jdk.selected.JAVA_MODULE": "17",
+    "last_opened_file_path": "D:/BECA PREGRADO",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Project",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.0",
+    "settings.editor.selected.configurable": "profiler.jvm",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
       <recent name="" />
     </key>
   </component>
-  <component name="RunManager" selected="JUnit.AdductTest.testIncorrectAdduct">
-    <configuration name="AdductTest.testIncorrectAdduct" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+  <component name="RunManager" selected="JUnit.All in FormulaValidation (3)">
+    <configuration name="All in FormulaValidation (1)" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="FormulaValidation" />
       <option name="PACKAGE_NAME" value="" />
-      <option name="MAIN_CLASS_NAME" value="AdductTest" />
-      <option name="METHOD_NAME" value="testIncorrectAdduct" />
+      <option name="TEST_OBJECT" value="package" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="All in FormulaValidation (2)" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="FormulaValidation" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="TEST_OBJECT" value="package" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="All in FormulaValidation (3)" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="FormulaValidation" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="TEST_OBJECT" value="package" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="All in FormulaValidation" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="FormulaValidation" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="TEST_OBJECT" value="package" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="FormulaTest.testFormulaFromInChi" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="FormulaValidation" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="MAIN_CLASS_NAME" value="FormulaTest" />
+      <option name="METHOD_NAME" value="testFormulaFromInChi" />
       <option name="TEST_OBJECT" value="method" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <configuration name="FormulaTest.testAbsoluteToPpm" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="FormulaValidation" />
-      <option name="PACKAGE_NAME" value="" />
-      <option name="MAIN_CLASS_NAME" value="FormulaTest" />
-      <option name="METHOD_NAME" value="testAbsoluteToPpm" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
+    <configuration name="FormulaValidation [compile] (1)" type="MavenRunConfiguration" factoryName="Maven">
+      <MavenSettings>
+        <option name="myGeneralSettings" />
+        <option name="myRunnerSettings" />
+        <option name="myRunnerParameters">
+          <MavenRunnerParameters>
+            <option name="profiles">
+              <set />
+            </option>
+            <option name="goals">
+              <list>
+                <option value="compile" />
+              </list>
+            </option>
+            <option name="pomFileName" value="pom.xml" />
+            <option name="profilesMap">
+              <map />
+            </option>
+            <option name="resolveToWorkspace" value="false" />
+            <option name="workingDirPath" value="$PROJECT_DIR$" />
+          </MavenRunnerParameters>
+        </option>
+      </MavenSettings>
+      <method v="2" />
     </configuration>
-    <configuration name="FormulaTest.testCheckMonoisotopicMassWithAdduct" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="FormulaValidation" />
-      <option name="PACKAGE_NAME" value="" />
-      <option name="MAIN_CLASS_NAME" value="FormulaTest" />
-      <option name="METHOD_NAME" value="testCheckMonoisotopicMassWithAdduct" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="FormulaTest.testMonoisotopicMass" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="FormulaValidation" />
-      <option name="PACKAGE_NAME" value="" />
-      <option name="MAIN_CLASS_NAME" value="FormulaTest" />
-      <option name="METHOD_NAME" value="testMonoisotopicMass" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="FormulaTest.testPpmDifferenceWithExpMass" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
-      <module name="FormulaValidation" />
-      <option name="PACKAGE_NAME" value="" />
-      <option name="MAIN_CLASS_NAME" value="FormulaTest" />
-      <option name="METHOD_NAME" value="testPpmDifferenceWithExpMass" />
-      <option name="TEST_OBJECT" value="method" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
+    <configuration name="FormulaValidation [compile]" type="MavenRunConfiguration" factoryName="Maven">
+      <MavenSettings>
+        <option name="myGeneralSettings" />
+        <option name="myRunnerSettings" />
+        <option name="myRunnerParameters">
+          <MavenRunnerParameters>
+            <option name="profiles">
+              <set />
+            </option>
+            <option name="goals">
+              <list>
+                <option value="compile" />
+                <option value="-Xlint:deprecation" />
+              </list>
+            </option>
+            <option name="pomFileName" value="pom.xml" />
+            <option name="profilesMap">
+              <map />
+            </option>
+            <option name="resolveToWorkspace" value="false" />
+            <option name="workingDirPath" value="$PROJECT_DIR$" />
+          </MavenRunnerParameters>
+        </option>
+      </MavenSettings>
+      <method v="2" />
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="JUnit.AdductTest.testIncorrectAdduct" />
-        <item itemvalue="JUnit.FormulaTest.testAbsoluteToPpm" />
-        <item itemvalue="JUnit.FormulaTest.testPpmDifferenceWithExpMass" />
-        <item itemvalue="JUnit.FormulaTest.testMonoisotopicMass" />
-        <item itemvalue="JUnit.FormulaTest.testCheckMonoisotopicMassWithAdduct" />
+        <item itemvalue="JUnit.All in FormulaValidation (3)" />
+        <item itemvalue="JUnit.FormulaTest.testFormulaFromInChi" />
+        <item itemvalue="JUnit.All in FormulaValidation (2)" />
+        <item itemvalue="JUnit.All in FormulaValidation (1)" />
+        <item itemvalue="JUnit.All in FormulaValidation" />
       </list>
     </recent_temporary>
   </component>
@@ -144,7 +193,11 @@
       <workItem from="1726475318911" duration="2523000" />
       <workItem from="1726581888984" duration="22824000" />
       <workItem from="1727079926775" duration="13588000" />
-      <workItem from="1727685221565" duration="6526000" />
+      <workItem from="1727685221565" duration="28407000" />
+      <workItem from="1728033100467" duration="3139000" />
+      <workItem from="1728038887113" duration="1790000" />
+      <workItem from="1728053729680" duration="4371000" />
+      <workItem from="1728294196953" duration="9794000" />
     </task>
     <task id="LOCAL-00001" summary="formula class">
       <created>1721214111133</created>
@@ -202,11 +255,29 @@
       <option name="project" value="LOCAL" />
       <updated>1727461771322</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="finished documentation">
+      <created>1727697132116</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1727697132117</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="formula class" />
@@ -215,6 +286,18 @@
     <MESSAGE value="maybe!? finished classes" />
     <MESSAGE value="new methods in Formula + tests" />
     <MESSAGE value="tests finished" />
-    <option name="LAST_COMMIT_MESSAGE" value="tests finished" />
+    <MESSAGE value="finished documentation" />
+    <option name="LAST_COMMIT_MESSAGE" value="finished documentation" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/test/java/FormulaTest.java</url>
+          <line>70</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>

@@ -1,9 +1,4 @@
-package classes;
-
-import enumerations.ChargeType;
-import exceptions.IncorrectAdduct;
-import exceptions.IncorrectFormula;
-import exceptions.NotFoundElement;
+package ceu.biolab;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -12,8 +7,11 @@ import java.util.HashMap;
 
 /**
  * The class represents a chemical adduct, including its formula, charge, and mass.
- *  * It can parse adducts from string representations (e.g., '[M+CH3CN+H]+', '[M-3H2O+2H]2+', '[5M+Ca]2+'),
- *  * and calculates the adduct mass and charge properties.
+ * It can parse adducts from string representations (e.g., '[M+CH3CN+H]+', '[M-3H2O+2H]2+', '[5M+Ca]2+'), and calculates the adduct mass and charge properties.
+ *
+ * @author Blanca Pueche Granados
+ * @author Alberto Gil-de-la-Fuente
+ * @since 0.0
  */
 public class Adduct {
     private static final double ELECTRON_WEIGHT = 0.00054858;
@@ -27,7 +25,7 @@ public class Adduct {
     private String originalFormula;
 
     /**
-     * Constructor for the classes.Adduct class.
+     * Constructor for the ceu.biolab.Adduct class.
      * @param adduct String representation
      * @throws IncorrectFormula If the formula contains invalid elements or values
      * @throws NotFoundElement If the element is not found in the periodic table
@@ -47,9 +45,8 @@ public class Adduct {
             this.originalFormula = match.group(2).trim();
 
             // Parse the formula to add and subtract elements
-            this.formulaPlus = new Formula();  // Placeholder for the actual formula
-            this.formulaMinus = new Formula();  // Placeholder for the actual formula
-            this.adductMass = calculateAdductMass(this.originalFormula);
+            calculateAdductFormulaToAddAndSubtract(this.originalFormula);
+            //this.adductMass = calculateAdductMass(adduct);
 
             if (match.group(4) != null) {
                 this.charge = match.group(3).isEmpty() ? 1 : Integer.parseInt(match.group(3));
@@ -88,7 +85,7 @@ public class Adduct {
 
             int numberSubformulas = (numberStr == null || numberStr.isEmpty()) ? 1 : Integer.parseInt(numberStr);
 
-            // Convert the subformula string to a classes.Formula object
+            // Convert the subformula string to a ceu.biolab.Formula object
             Formula subformula = Formula.formulaFromStringHill(subformulaStr, null, null);
             Map<Element.ElementType, Integer> subformulaElements = subformula.getElements();
 
@@ -118,9 +115,9 @@ public class Adduct {
             }
         }
 
-        // Create classes.Formula objects for the elements to add and subtract
-        this.formulaPlus = new Formula(elementsToAdd, null, 0, null);
-        this.formulaMinus = new Formula(elementsToSubtract, null, 0, null);
+        // Create ceu.biolab.Formula objects for the elements to add and subtract
+        this.formulaPlus = new Formula(elementsToAdd, null, 0, "");
+        this.formulaMinus = new Formula(elementsToSubtract, null, 0, "");
 
         // Calculate the adduct mass
         this.adductMass = this.formulaPlus.getMonoisotopicMass() - this.formulaMinus.getMonoisotopicMass();
@@ -128,9 +125,9 @@ public class Adduct {
 
 
     /**
-     * Calculate classes.Adduct with the classes.Formula in String form
+     * Calculate ceu.biolab.Adduct with the ceu.biolab.Formula in String form
      * @param adductFormula
-     * @return Double value for the classes.Adduct
+     * @return Double value for the ceu.biolab.Adduct
      * @throws IncorrectFormula If the formula contains invalid elements or values
      * @throws NotFoundElement If the element is not found in the periodic table
      * @throws IncorrectAdduct If the adduct provided is invalid
@@ -171,8 +168,8 @@ public class Adduct {
     }
 
     /**
-     * Get a copy of the String representation of a classes.Formula
-     * @return A copy of the String representation of a classes.Formula
+     * Get a copy of the String representation of a ceu.biolab.Formula
+     * @return A copy of the String representation of a ceu.biolab.Formula
      */
     public String getFormulaStr() {
         StringBuilder formulaStr = new StringBuilder();
@@ -186,40 +183,42 @@ public class Adduct {
     }
 
     /**
-     * Get a copy of the FormulaPlus
-     * @return A copy of the FormulaPlus
+     * Get a Formula object representing the elements to add in the adduct.
+     * Example: with the adduct [M+H-H2O]+, formulaPlus would be 0   (since H-H2O=-OH)
+     * @return The FormulaPlus
      */
     public Formula getFormulaPlus() {
         return formulaPlus;
     }
 
     /**
-     * Get a copy of the FormulaMinus
-     * @return A copy of the FormulaMinus
+     * Get a Formula object representing the elements to subtract in the adduct
+     * Example: with the adduct [M+H-H2O]+, formulaMinus would be OH (since H-H2O=-OH)
+     * @return The FormulaMinus
      */
     public Formula getFormulaMinus() {
         return formulaMinus;
     }
 
     /**
-     * Get a copy of the mass
-     * @return A copy of the mass
+     * Get the mass
+     * @return The mass
      */
     public double getAdductMass() {
         return adductMass;
     }
 
     /**
-     * Get a copy of the charge
-     * @return A copy of the charge
+     * Get the charge
+     * @return The charge
      */
     public int getAdductCharge() {
         return charge;
     }
 
     /**
-     * Get a copy of the charge type
-     * @return A copy of the charge type
+     * Get the charge type
+     * @return The charge type
      */
     public ChargeType getAdductChargeType() {
         return chargeType;

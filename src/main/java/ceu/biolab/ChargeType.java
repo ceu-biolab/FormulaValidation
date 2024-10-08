@@ -1,8 +1,12 @@
 
-package enumerations;
+package ceu.biolab;
 
 /**
  * This enumeration represents the values of the charge; positive, negative and neutral
+ *
+ * @author Blanca Pueche Granados
+ * @author Alberto Gil-de-la-Fuente
+ * @since 0.0
  */
 public enum ChargeType {
 

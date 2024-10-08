@@ -1,7 +1,11 @@
-package exceptions;// NotFoundElement.java
+package ceu.biolab;// NotFoundElement.java
 
 /**
- * Exception to raise when a chemical element is not present
+ *  Exception to raise when a chemical element is not present
+ *
+ * @author Blanca Pueche Granados
+ * @author Alberto Gil-de-la-Fuente
+ * @since 0.0
  */
 public class NotFoundElement extends Exception {
     /**
