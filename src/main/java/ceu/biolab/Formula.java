@@ -2,9 +2,7 @@
 package ceu.biolab;
 
 import java.io.IOException;
-import java.util.EnumMap;
-import java.util.Map;
-import java.util.HashMap;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -25,6 +23,9 @@ import org.openscience.cdk.silent.SilentChemObjectBuilder;
 import org.openscience.cdk.smiles.SmilesParser;
 import org.openscience.cdk.tools.manipulator.MolecularFormulaManipulator;
 
+import static ceu.biolab.Element.*;
+
+
 /**
  * The ceu.biolab.Formula class represents a chemical formula and its associated porperties.
  * It provides several methods to calculate monoisotopic mass, handle adducts and manipulate chemical formulas.
@@ -38,13 +39,28 @@ public class Formula {
     private static final String CC_URL = "https://www.chemcalc.org/chemcalc/mf";
     private static final int DEFAULT_PPM = 50; //Default part per million tolerance
 
-    private Map<Element.ElementType,Integer> elements; //Map of elements and their quantities
+    private static Map<Element.ElementType,Integer> elements; //Map of elements and their quantities
     private String adduct;
     private int charge;
     private ChargeType chargeType; //Positive, negative of neutral
     private double monoisotopicMass;
     private double monoisotopicMassWithAdduct;
     private Map<String, Object> metadata;
+    
+    public static final Map<String, Integer> MAPCHEMALPHABET;
+
+        static {
+            Map<String, Integer> mapChemAlphabetTMP = new LinkedHashMap<>();
+            mapChemAlphabetTMP.put("CHNOPS", 0);
+            mapChemAlphabetTMP.put("CHNOPSD", 1);
+            mapChemAlphabetTMP.put("CHNOPSCL", 2);
+            mapChemAlphabetTMP.put("CHNOPSCLD", 3);
+            mapChemAlphabetTMP.put("ALL", 4);
+            mapChemAlphabetTMP.put("ALLD", 5);
+            MAPCHEMALPHABET = Collections.unmodifiableMap(mapChemAlphabetTMP);
+        }
+
+         
 
     /**
      * Constructor for the ceu.biolab.Formula class.
@@ -138,6 +154,36 @@ public class Formula {
         }
         return false;
     }
+
+
+    /**
+     * @return the type of the formula. If formula only has CHNOPS elements
+     * return CHNOPS. If they have CHNOPS+CL, then returns CNHOPSCL. If formula
+     * has another elements, return ALL. If formula has elements which are not
+     * in the periodic table, then returns ""
+     */
+    public static FormulaType getType() {
+        // CHECK THE ELEMENTS OF THE MAP
+        Set<Element.ElementType> setElements = elements.keySet();
+
+        // TODO CHANGE SO IT CHECKS THAT ONLY CONTAINS ELEMENTS CHNOPS
+        //verificar: no contains all -->  no contiene ningun otro elemento que no sea CHNOPS o CHNOPSCL,...
+        if (setElements.stream().allMatch(SETCHNOPS::contains)) {
+            return FormulaType.CHNOPS;
+        } else if (setElements.stream().allMatch(SETCHNOPSCL::contains)) {
+            return FormulaType.CHNOPSCL;
+        } else if (setElements.stream().allMatch(SETCHNOPSD::contains)) {
+            return FormulaType.CHNOPSD;
+        } else if (setElements.stream().allMatch(SETCHNOPSCLD::contains)) {
+            return FormulaType.CHNOPSCLD;
+        }else if (setElements.stream().allMatch(element -> element == Element.ElementType.D)) {
+            return FormulaType.ALLD; //** todos que contienen Deuterio H2 isotopo agua
+        }else{
+            return FormulaType.ALL; //** contiene todos
+        }
+    }
+
+
 
     /**
      * Returns a string representation of the formula, including elements, charge, and adduct.

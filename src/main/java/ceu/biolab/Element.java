@@ -1,7 +1,6 @@
 package ceu.biolab;
 
-import java.util.EnumMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * The ceu.biolab.Element class represents various chemical elements and isotopes, storing their respective atomic weights for use in chemical formula calculations.
@@ -411,4 +410,63 @@ public class Element {
         elementWeights.put(ElementType.Uus, 294.0);
         elementWeights.put(ElementType.Uuo, 294.0);
     }
+
+
+// TODO COLECCIONS INMUTABLES
+    public static final Set<ElementType> SETCHNOPS;
+
+    static {
+        Set<ElementType> SETCHNOPSTMP = new HashSet<>();
+        SETCHNOPSTMP.add(ElementType.C);
+        SETCHNOPSTMP.add(ElementType.H);
+        SETCHNOPSTMP.add(ElementType.N);
+        SETCHNOPSTMP.add(ElementType.O);
+        SETCHNOPSTMP.add(ElementType.P);
+        SETCHNOPSTMP.add(ElementType.S);
+        SETCHNOPS = Collections.unmodifiableSet(SETCHNOPSTMP);
+    }
+
+    public static final Set<ElementType> SETCHNOPSD;
+
+    static {
+        Set<ElementType> SETCHNOPSDTMP = new HashSet<>();
+        SETCHNOPSDTMP.add(ElementType.C);
+        SETCHNOPSDTMP.add(ElementType.H);
+        SETCHNOPSDTMP.add(ElementType.N);
+        SETCHNOPSDTMP.add(ElementType.O);
+        SETCHNOPSDTMP.add(ElementType.P);
+        SETCHNOPSDTMP.add(ElementType.S);
+        SETCHNOPSDTMP.add(ElementType.D);
+        SETCHNOPSD = Collections.unmodifiableSet(SETCHNOPSDTMP);
+    }
+
+    public static final Set<ElementType> SETCHNOPSCL;
+
+    static {
+        Set<ElementType> SETCHNOPSCLTMP = new HashSet<>();
+        SETCHNOPSCLTMP.add(ElementType.C);
+        SETCHNOPSCLTMP.add(ElementType.H);
+        SETCHNOPSCLTMP.add(ElementType.N);
+        SETCHNOPSCLTMP.add(ElementType.O);
+        SETCHNOPSCLTMP.add(ElementType.P);
+        SETCHNOPSCLTMP.add(ElementType.S);
+        SETCHNOPSCLTMP.add(ElementType.Cl);
+        SETCHNOPSCL = Collections.unmodifiableSet(SETCHNOPSCLTMP);
+    }
+
+    public static final Set<ElementType> SETCHNOPSCLD;
+
+    static {
+        Set<ElementType> SETCHNOPSCLDTMP = new HashSet<>();
+        SETCHNOPSCLDTMP.add(ElementType.C);
+        SETCHNOPSCLDTMP.add(ElementType.H);
+        SETCHNOPSCLDTMP.add(ElementType.N);
+        SETCHNOPSCLDTMP.add(ElementType.O);
+        SETCHNOPSCLDTMP.add(ElementType.P);
+        SETCHNOPSCLDTMP.add(ElementType.S);
+        SETCHNOPSCLDTMP.add(ElementType.D);
+        SETCHNOPSCLDTMP.add(ElementType.Cl);
+        SETCHNOPSCLD = Collections.unmodifiableSet(SETCHNOPSCLDTMP);
+    }
+
 }
