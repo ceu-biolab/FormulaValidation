@@ -1,10 +1,14 @@
-import ceu.biolab.Formula;
-import ceu.biolab.IncorrectAdduct;
-import ceu.biolab.IncorrectFormula;
-import ceu.biolab.NotFoundElement;
+import ceu.biolab.*;
 import org.junit.jupiter.api.Test;
 
+import java.text.Normalizer;
+import java.util.Map;
+import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
+import java.util.HashMap;
+import ceu.biolab.FormulaType;
+import ceu.biolab.Element;
+
 public class FormulaTest {
 
     @Test
@@ -132,4 +136,54 @@ public class FormulaTest {
         assertEquals(expectedAbsValue, Formula.ppmToAbsolute(referenceMass, ppm), 1e-6,
                 "PPM to absolute conversion failed.");
     }
+
+    @Test
+    public void testFormulaTypeCHNOPS() throws IncorrectFormula, IncorrectAdduct, NotFoundElement {
+        Formula formula = Formula.formulaFromStringHill("H2CON", null, null);
+        FormulaType formulaType = formula.getType();
+        FormulaType expectedFormulaType = FormulaType.CHNOPS;
+        assertEquals(expectedFormulaType, formulaType, "Formula H2CON should be CHNOPS");
+    }
+
+    @Test
+    public void testFormulaTypeCHNOPSCL() throws IncorrectFormula, IncorrectAdduct, NotFoundElement {
+        Formula formula = Formula.formulaFromStringHill("H2CONCl", null, null);
+        FormulaType formulaType = formula.getType();
+        FormulaType expectedFormulaType = FormulaType.CHNOPSCL;
+        assertEquals(expectedFormulaType, formulaType, "Formula H2CON should be CHNOPS");
+    }
+
+    @Test
+    public void testFormulaTypeCHNOPSD() throws IncorrectFormula, IncorrectAdduct, NotFoundElement {
+        Formula formula = Formula.formulaFromStringHill("H2DCON", null, null);
+        FormulaType formulaType = formula.getType();
+        FormulaType expectedFormulaType = FormulaType.CHNOPSD;
+        assertEquals(expectedFormulaType, formulaType, "Formula H2CON should be CHNOPS");
+    }
+
+    @Test
+    public void testFormulaTypeCHNOPSCLD() throws IncorrectFormula, IncorrectAdduct, NotFoundElement {
+        Formula formula = Formula.formulaFromStringHill("H2DCONCl", null, null);
+        FormulaType formulaType = formula.getType();
+        FormulaType expectedFormulaType = FormulaType.CHNOPSCLD;
+        assertEquals(expectedFormulaType, formulaType, "Formula H2CON should be CHNOPS");
+    }
+
+    @Test
+    public void testFormulaTypeALL() throws IncorrectFormula, IncorrectAdduct, NotFoundElement {
+        Formula formula = Formula.formulaFromStringHill("H2CONPb", null, null);
+        FormulaType formulaType = formula.getType();
+        FormulaType expectedFormulaType = FormulaType.ALL;
+        assertEquals(expectedFormulaType, formulaType, "Formula H2CON should be CHNOPS");
+    }
+
+    @Test
+    public void testFormulaTypeALLD() throws IncorrectFormula, IncorrectAdduct, NotFoundElement {
+        Formula formula = Formula.formulaFromStringHill("H2DCONPb", null, null);
+        FormulaType formulaType = formula.getType();
+        FormulaType expectedFormulaType = FormulaType.ALLD;
+        assertEquals(expectedFormulaType, formulaType, "Formula H2CON should be CHNOPS");
+    }
+
 }
+
