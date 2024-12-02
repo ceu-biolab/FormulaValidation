@@ -39,7 +39,7 @@ public class Formula {
     private static final String CC_URL = "https://www.chemcalc.org/chemcalc/mf";
     private static final int DEFAULT_PPM = 50; //Default part per million tolerance
 
-    private static Map<Element.ElementType,Integer> elements; //Map of elements and their quantities
+    private Map<Element.ElementType,Integer> elements; //Map of elements and their quantities
     private String adduct;
     private int charge;
     private ChargeType chargeType; //Positive, negative of neutral
@@ -162,21 +162,21 @@ public class Formula {
      * has another elements, return ALL. If formula has elements which are not
      * in the periodic table, then returns ""
      */
-    public static FormulaType getType() {
+    public FormulaType getType() {
         // CHECK THE ELEMENTS OF THE MAP
         Set<Element.ElementType> setElements = elements.keySet();
 
         // TODO CHANGE SO IT CHECKS THAT ONLY CONTAINS ELEMENTS CHNOPS
         //verificar: no contains all -->  no contiene ningun otro elemento que no sea CHNOPS o CHNOPSCL,...
-        if (setElements.stream().allMatch(SETCHNOPS::contains)) {
+        if (setElements.stream().allMatch(Element.SETCHNOPS::contains)) {
             return FormulaType.CHNOPS;
-        } else if (setElements.stream().allMatch(SETCHNOPSCL::contains)) {
+        } else if (setElements.stream().allMatch(Element.SETCHNOPSCL::contains)) {
             return FormulaType.CHNOPSCL;
-        } else if (setElements.stream().allMatch(SETCHNOPSD::contains)) {
+        } else if (setElements.stream().allMatch(Element.SETCHNOPSD::contains)) {
             return FormulaType.CHNOPSD;
-        } else if (setElements.stream().allMatch(SETCHNOPSCLD::contains)) {
+        } else if (setElements.stream().allMatch(Element.SETCHNOPSCLD::contains)) {
             return FormulaType.CHNOPSCLD;
-        }else if (setElements.stream().allMatch(element -> element == Element.ElementType.D)) {
+        }else if (setElements.stream().anyMatch(element -> element == Element.ElementType.D)) {
             return FormulaType.ALLD; //** todos que contienen Deuterio H2 isotopo agua
         }else{
             return FormulaType.ALL; //** contiene todos
@@ -473,7 +473,7 @@ public class Formula {
         Adduct adductNew = new Adduct(this.adduct);
 
         // Calculate partial elements considering the adduct multiplier
-        Map<Element.ElementType, Integer> partialElements = new EnumMap<>(Element.ElementType.class);
+        Map<Element.ElementType, Integer> partialElements = new HashMap<>();
         for (Map.Entry<Element.ElementType, Integer> entry : this.elements.entrySet()) {
             Element.ElementType element = entry.getKey();
             int count = entry.getValue();
